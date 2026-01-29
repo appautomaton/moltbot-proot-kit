@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.1.27-beta.1",
+    "lastTouchedAt": "2026-01-29T01:04:12.277Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-01-28T02:34:14.388Z",
+    "lastRunVersion": "2026.1.25",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "browser": {
+    "enabled": true,
+    "executablePath": "${BROWSER_EXECUTABLE_PATH}",
+    "headless": true,
+    "noSandbox": true,
+    "defaultProfile": "clawd"
+  },
+  "ui": {
+    "seamColor": "#0018a8",
+    "assistant": {
+      "name": "Lux",
+      "avatar": "🦞"
+    }
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "oauth"
+      },
+      "google-antigravity:default": {
+        "provider": "google-antigravity",
+        "mode": "oauth",
+        "email": "${GOOGLE_AUTH_EMAIL}"
+      }
+    }
+  },
+  "models": {
+    "providers": {
+      "nvidia-integrate": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVIDIA_INTEGRATE_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5 (NVIDIA Integrate)",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "google-antigravity/claude-opus-4-5-thinking",
+        "fallbacks": [
+          "google-antigravity/claude-sonnet-4-5-thinking",
+          "google-antigravity/gemini-3-pro-high"
+        ]
+      },
+      "models": {
+        "google-antigravity/claude-opus-4-5-thinking": {},
+        "google-antigravity/claude-sonnet-4-5-thinking": {},
+        "google-antigravity/gemini-3-pro-high": {}
+      },
+      "workspace": "${AGENT_WORKSPACE}",
+      "memorySearch": {
+        "provider": "gemini",
+        "remote": {
+          "apiKey": "${GEMINI_MEMORY_API_KEY}",
+          "batch": {
+            "enabled": false
+          }
+        }
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "heartbeat": {
+        "every": "20m"
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true
+      },
+      {
+        "id": "kimi",
+        "workspace": "${AGENT_WORKSPACE}",
+        "model": "nvidia-integrate/moonshotai/kimi-k2.5",
+        "sandbox": {
+          "mode": "non-main"
+        },
+        "tools": {
+          "sandbox": {
+            "tools": {
+              "allow": ["bash", "read", "write", "edit", "glob", "grep"],
+              "deny": ["browser", "cron", "nodes"]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "perplexity",
+        "perplexity": {
+          "apiKey": "${PERPLEXITY_API_KEY}",
+          "baseUrl": "https://api.perplexity.ai/v2",
+          "model": "sonar-pro"
+        }
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial",
+      "actions": {
+        "sendMessage": true
+      }
+    }
+  },
+  "gateway": {
+    "port": 19001,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "${GATEWAY_AUTH_TOKEN}"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "1password": { "enabled": false },
+      "apple-notes": { "enabled": false },
+      "apple-reminders": { "enabled": false },
+      "bird": { "enabled": false },
+      "blogwatcher": { "enabled": true },
+      "blucli": { "enabled": false },
+      "bluebubbles": { "enabled": false },
+      "camsnap": { "enabled": false },
+      "gemini": { "enabled": false },
+      "gifgrep": { "enabled": false },
+      "github": { "enabled": false },
+      "gog": { "enabled": true },
+      "goplaces": { "enabled": false },
+      "himalaya": { "enabled": false },
+      "imsg": { "enabled": false },
+      "local-places": { "enabled": false },
+      "model-usage": { "enabled": false },
+      "nano-banana-pro": { "enabled": false },
+      "notion": { "enabled": false },
+      "obsidian": { "enabled": false },
+      "openai-image-gen": { "enabled": false },
+      "openai-whisper": { "enabled": false },
+      "openai-whisper-api": { "enabled": false },
+      "openhue": { "enabled": false },
+      "oracle": { "enabled": false },
+      "ordercli": { "enabled": false },
+      "peekaboo": { "enabled": false },
+      "sag": { "enabled": false },
+      "sherpa-onnx-tts": { "enabled": false },
+      "slack": { "enabled": false },
+      "songsee": { "enabled": false },
+      "sonoscli": { "enabled": false },
+      "spotify-player": { "enabled": false },
+      "summarize": { "enabled": false },
+      "things-mac": { "enabled": false },
+      "trello": { "enabled": false },
+      "video-frames": { "enabled": false },
+      "voice-call": { "enabled": false },
+      "wacli": { "enabled": false },
+      "nano-pdf": { "enabled": false }
+    }
+  },
+  "plugins": {
+    "enabled": true,
+    "entries": {
+      "telegram": { "enabled": true },
+      "memory-core": { "enabled": true },
+      "google-antigravity-auth": { "enabled": true }
+    }
+  }
+}
