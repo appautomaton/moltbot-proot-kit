@@ -21,5 +21,5 @@ npm-debug.log*
 dist/
 build/
 
-# Local Claude Code settings
-.claude/
+# Local Claude Code settings (keep settings.json, ignore local overrides)
+.claude/settings.local.json

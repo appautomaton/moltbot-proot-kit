@@ -1,18 +1,48 @@
-# moltbot-platform
+# moltbot-proot-kit
 
-This repo is a lightweight workspace for running a fork of **Moltbot** (formerly Clawdbot) as a **standalone Gateway service**, without `npx` and without `npm install -g`.
+A lightweight wrapper for running a fork of **Moltbot** (formerly Clawdbot) as a **standalone Gateway service** on **Termux proot-distro Debian**, without `npx` and without `npm install -g`.
+
+## Prerequisites
+
+### Runtime Environment
+
+This project is designed for [Termux](https://termux.dev/) with [proot-distro](https://github.com/termux/proot-distro) Debian:
+
+```bash
+proot-distro login --isolated debian
+```
+
+> It is recommended to set up a non-root user inside your proot environment.
+
+### Node.js
+
+Requires **Node 24+**. We recommend installing via [nvm](https://github.com/nvm-sh/nvm):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install 24
+```
+
+Then enable `pnpm` via corepack:
+
+```bash
+corepack enable
+```
 
 ## Layout
-- `moltbot-ac/` — the cloned Moltbot fork (actual source + pnpm workspace)
+
+- `moltbot-ac/` — the cloned Moltbot fork (git submodule)
 - `config/` — environment configuration (`.env` for secrets)
 - `docs/` — additional documentation
 - `scripts/` — wrapper scripts
 
 ## Quickstart
 
-Prereqs: Node 22+ and `pnpm` available (use `corepack enable` once if needed).
-
 ```bash
+# Clone with submodule
+git clone --recurse-submodules https://github.com/appautomaton/moltbot-proot-kit.git
+cd moltbot-proot-kit
+
 # Install deps + build
 pnpm moltbot:install
 pnpm moltbot:ui:build
@@ -44,7 +74,7 @@ See `docs/COMMANDS.md` for full reference.
 
 ## Environment Variables
 
-Copy `config/.env.template` to `config/.env` and fill in your values. The wrapper script (`scripts/moltbot.mjs`) automatically loads this file.
+Copy `config/.env.template` to `config/.env` and fill in your values. The wrapper script (`scripts/moltbot.mjs`) automatically loads this file. Leave fields empty if you don't use that feature.
 
 ## Browser Automation (proot/headless-friendly)
 
@@ -62,5 +92,4 @@ Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `~/.clawdbot/brows
 
 - **Profile**: This project uses the prod profile at `~/.clawdbot/` by default.
 - **`--dev` flag**: Only use if you need an isolated dev environment (`~/.clawdbot-dev/`, port 19001). Must come before the subcommand: `pnpm moltbot --dev gateway`, not `pnpm moltbot gateway --dev`.
-- **Corepack**: `corepack enable` is only needed if `pnpm` isn't on your PATH.
 - **"node_modules missing" warning**: This is expected at the repo root. Ignore it or run commands with `pnpm --dir moltbot-ac moltbot ...`.
