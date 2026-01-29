@@ -8,20 +8,20 @@ This workspace includes a cloned fork of Moltbot (formerly Clawdbot) at `moltbot
 ## Local workflow (no global install)
 - Do **not** use `npx` or `npm install -g`.
 - If `pnpm` is missing, run `corepack enable` once (it installs the pnpm shim for your current Node install).
-- Run commands from repo root: `pnpm moltbot <command>`
+- Run commands from repo root: `pnpm moltbot <command>` (root wrapper: `node scripts/moltbot.mjs` → `pnpm --dir moltbot-ac moltbot ...`)
 - See `docs/COMMANDS.md` for full command reference.
 
 ## Environment configuration
 - Copy `config/.env.template` to `config/.env` and fill in your values.
-- The wrapper script (`scripts/moltbot.mjs`) automatically loads `config/.env`.
+- The wrapper script (`scripts/moltbot.mjs`) automatically loads `config/.env` (without overriding already-set env vars).
 - Leave fields empty if you don't use that feature (e.g., no GOG = leave GOG fields blank).
 
 ## Profile (prod vs dev)
 - **Default**: This project uses the **prod profile** at `~/.clawdbot/`. Do not use `--dev` flag for general usage.
-- **`--dev` flag**: Only for isolated dev environment (`~/.clawdbot-dev/`, port 19001). Must come **before** the subcommand:
+- **`--dev` flag**: Only for isolated dev environment (`~/.clawdbot-dev/`, port 19001). Prefer it **before** the subcommand (the wrapper normalizes it if misplaced):
   ```bash
-  pnpm moltbot --dev gateway    # correct
-  pnpm moltbot gateway --dev    # wrong
+  pnpm moltbot --dev gateway    # preferred
+  pnpm moltbot gateway --dev    # works (normalized)
   ```
 
 ## Safety defaults
