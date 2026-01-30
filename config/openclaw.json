@@ -64,20 +64,23 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "google-antigravity/claude-opus-4-5-thinking",
+        "primary": "openai-codex/gpt-5.2",
         "fallbacks": [
+          "google-antigravity/claude-opus-4-5-thinking",
           "google-antigravity/claude-sonnet-4-5-thinking",
           "google-antigravity/gemini-3-pro-high"
         ]
       },
       "models": {
+        "openai-codex/gpt-5.2": {},
         "google-antigravity/claude-opus-4-5-thinking": {},
         "google-antigravity/claude-sonnet-4-5-thinking": {},
-        "google-antigravity/gemini-3-pro-high": {}
+        "google-antigravity/gemini-3-pro-high": {},
+        "google-antigravity/gemini-3-pro-low": {}
       },
       "workspace": "${AGENT_WORKSPACE}",
       "memorySearch": {
-        "provider": "gemini",
+        "provider": "local",
         "remote": {
           "apiKey": "${GEMINI_MEMORY_API_KEY}",
           "batch": {
@@ -88,38 +91,62 @@
       "compaction": {
         "mode": "safeguard"
       },
+      "thinkingDefault": "high",
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
       },
       "heartbeat": {
-        "every": "20m"
+        "every": "45m"
       }
     },
     "list": [
       {
         "id": "main",
-        "default": true
+        "default": true,
+        "subagents": {
+          // Allow main agent to spawn subagents under the Kimi agent id.
+          // This keeps subagent auth + model selection isolated to that agent.
+          "allowAgents": ["kimi"]
+        }
       },
       {
         "id": "kimi",
         "workspace": "${AGENT_WORKSPACE}",
         "model": "nvidia-integrate/moonshotai/kimi-k2.5",
         "sandbox": {
-          "mode": "non-main"
+          // NOTE: OpenClaw sandboxing requires the `docker` CLI. If Docker isn't installed,
+          // sandboxed sessions will fail. Keep this off unless you have Docker available.
+          "mode": "off"
         },
         "tools": {
+          // Keep Kimi away from device control + gateway administration.
+          "deny": ["nodes", "gateway"],
           "sandbox": {
             "tools": {
               "allow": ["bash", "read", "write", "edit", "glob", "grep"],
-              "deny": ["browser", "cron", "nodes"]
+              "deny": ["browser", "cron", "nodes", "gateway"]
             }
           }
+        }
+      },
+      {
+        "id": "gemini",
+        "workspace": "${AGENT_WORKSPACE}",
+        "model": {
+          "primary": "google-antigravity/gemini-3-pro-high",
+          "fallbacks": ["google-antigravity/gemini-3-pro-low"]
         }
       }
     ]
   },
   "tools": {
+    "agentToAgent": {
+      // Enable cross-agent session tools (sessions_send / sessions_history / sessions_list / session_status).
+      // Needed for main <-> kimi collaboration via those tools.
+      "enabled": true,
+      "allow": ["main", "kimi"]
+    },
     "web": {
       "search": {
         "enabled": true,

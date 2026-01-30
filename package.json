@@ -1,11 +1,11 @@
 {
-  "name": "moltbot-platform",
+  "name": "openclaw-platform",
   "private": true,
   "packageManager": "pnpm@10.23.0",
   "scripts": {
-    "moltbot": "node scripts/moltbot.mjs",
-    "moltbot:install": "pnpm --dir moltbot-ac install",
-    "moltbot:build": "pnpm --dir moltbot-ac build",
-    "moltbot:ui:build": "pnpm --dir moltbot-ac ui:build"
+    "openclaw": "node scripts/openclaw.mjs",
+    "openclaw:install": "pnpm --dir openclaw install",
+    "openclaw:build": "pnpm --dir openclaw build",
+    "openclaw:ui:build": "pnpm --dir openclaw ui:build"
   }
 }

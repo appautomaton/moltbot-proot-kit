@@ -1,21 +1,21 @@
-# Moltbot Commands Reference
+# OpenClaw Commands Reference
 
 This project uses a local pnpm build. All commands are run via:
 
 ```bash
-pnpm moltbot <command> <subcommand> [options]
+pnpm openclaw <command> <subcommand> [options]
 ```
 
-Run from either `clawdbot-platform/` or `moltbot-ac/`. Uses prod profile at `~/.clawdbot/`.
+Run from either `openclaw-platform/` or `openclaw/`. Uses prod profile at `~/.openclaw/` (legacy `~/.clawdbot/` is still supported).
 
 ---
 
 ## Build & Install
 
 ```bash
-pnpm moltbot:install      # Install dependencies
-pnpm moltbot:ui:build     # Build the UI
-pnpm moltbot:build        # Build the CLI
+pnpm openclaw:install      # Install dependencies
+pnpm openclaw:ui:build     # Build the UI
+pnpm openclaw:build        # Build the CLI
 ```
 
 ---
@@ -23,10 +23,10 @@ pnpm moltbot:build        # Build the CLI
 ## Gateway
 
 ```bash
-pnpm moltbot gateway                # Run the gateway
-pnpm moltbot gateway status         # Check gateway status
-pnpm moltbot gateway --port 18789   # Run on custom port
-pnpm moltbot gateway --force        # Kill existing listener and start
+pnpm openclaw gateway                # Run the gateway
+pnpm openclaw gateway status         # Check gateway status
+pnpm openclaw gateway --port 18789   # Run on custom port
+pnpm openclaw gateway --force        # Kill existing listener and start
 ```
 
 Shortcut scripts (from project root):
@@ -41,9 +41,9 @@ pnpm gateway:status:dev   # Check dev gateway status
 ## Memory
 
 ```bash
-pnpm moltbot memory status    # Show memory search index status
-pnpm moltbot memory index     # Reindex memory files
-pnpm moltbot memory search    # Search memory files
+pnpm openclaw memory status    # Show memory search index status
+pnpm openclaw memory index     # Reindex memory files
+pnpm openclaw memory search    # Search memory files
 ```
 
 ---
@@ -51,8 +51,8 @@ pnpm moltbot memory search    # Search memory files
 ## Messaging
 
 ```bash
-pnpm moltbot message send --target +15555550123 --message "Hi"
-pnpm moltbot message send --channel telegram --target @mychat --message "Hi"
+pnpm openclaw message send --target +15555550123 --message "Hi"
+pnpm openclaw message send --channel telegram --target @mychat --message "Hi"
 ```
 
 ---
@@ -60,9 +60,9 @@ pnpm moltbot message send --channel telegram --target @mychat --message "Hi"
 ## Agent
 
 ```bash
-pnpm moltbot agent --to +15555550123 --message "Run summary"
-pnpm moltbot agent --to +15555550123 --message "Run summary" --deliver
-pnpm moltbot agents         # Manage isolated agents
+pnpm openclaw agent --to +15555550123 --message "Run summary"
+pnpm openclaw agent --to +15555550123 --message "Run summary" --deliver
+pnpm openclaw agents         # Manage isolated agents
 ```
 
 ---
@@ -70,9 +70,9 @@ pnpm moltbot agents         # Manage isolated agents
 ## Channels & Sessions
 
 ```bash
-pnpm moltbot channels                   # Channel management
-pnpm moltbot channels login --verbose   # Link WhatsApp Web (show QR)
-pnpm moltbot sessions                   # List conversation sessions
+pnpm openclaw channels                   # Channel management
+pnpm openclaw channels login --verbose   # Link WhatsApp Web (show QR)
+pnpm openclaw sessions                   # List conversation sessions
 ```
 
 ---
@@ -80,7 +80,7 @@ pnpm moltbot sessions                   # List conversation sessions
 ## Skills
 
 ```bash
-pnpm moltbot skills         # Skills management
+pnpm openclaw skills         # Skills management
 ```
 
 ---
@@ -88,10 +88,10 @@ pnpm moltbot skills         # Skills management
 ## Health & Diagnostics
 
 ```bash
-pnpm moltbot health         # Fetch health from running gateway
-pnpm moltbot status         # Show channel health and recent sessions
-pnpm moltbot doctor         # Health checks + quick fixes
-pnpm moltbot logs           # Gateway logs
+pnpm openclaw health         # Fetch health from running gateway
+pnpm openclaw status         # Show channel health and recent sessions
+pnpm openclaw doctor         # Health checks + quick fixes
+pnpm openclaw logs           # Gateway logs
 ```
 
 ---
@@ -99,11 +99,11 @@ pnpm moltbot logs           # Gateway logs
 ## Setup & Configuration
 
 ```bash
-pnpm moltbot setup                              # Initialize config and workspace
-pnpm moltbot setup --mode local --non-interactive
-pnpm moltbot onboard                            # Interactive setup wizard
-pnpm moltbot configure                          # Set up credentials/devices
-pnpm moltbot config                             # Config helpers (get/set/unset)
+pnpm openclaw setup                              # Initialize config and workspace
+pnpm openclaw setup --mode local --non-interactive
+pnpm openclaw onboard                            # Interactive setup wizard
+pnpm openclaw configure                          # Set up credentials/devices
+pnpm openclaw config                             # Config helpers (get/set/unset)
 ```
 
 ---
@@ -111,7 +111,7 @@ pnpm moltbot config                             # Config helpers (get/set/unset)
 ## Browser
 
 ```bash
-pnpm moltbot browser        # Manage dedicated browser (Chrome/Chromium)
+pnpm openclaw browser        # Manage dedicated browser (Chrome/Chromium)
 ```
 
 ---
@@ -119,11 +119,11 @@ pnpm moltbot browser        # Manage dedicated browser (Chrome/Chromium)
 ## Other Utilities
 
 ```bash
-pnpm moltbot dashboard      # Open Control UI
-pnpm moltbot tui            # Terminal UI
-pnpm moltbot plugins        # Plugin management
-pnpm moltbot webhooks       # Webhook helpers
-pnpm moltbot cron           # Cron scheduler
+pnpm openclaw dashboard      # Open Control UI
+pnpm openclaw tui            # Terminal UI
+pnpm openclaw plugins        # Plugin management
+pnpm openclaw webhooks       # Webhook helpers
+pnpm openclaw cron           # Cron scheduler
 ```
 
 ---
@@ -131,16 +131,16 @@ pnpm moltbot cron           # Cron scheduler
 ## Help
 
 ```bash
-pnpm moltbot --help             # Show all commands
-pnpm moltbot <command> --help   # Show help for specific command
+pnpm openclaw --help             # Show all commands
+pnpm openclaw <command> --help   # Show help for specific command
 ```
 
 ---
 
 ## Notes
 
-- **Prod profile**: `~/.clawdbot/` (default)
-- **Dev profile**: `~/.clawdbot-dev/` (use `--dev` flag)
-- **Custom profile**: `--profile <name>` uses `~/.clawdbot-<name>/`
+- **Prod profile**: `~/.openclaw/` (default; legacy `~/.clawdbot/` supported)
+- **Dev profile**: `~/.openclaw-dev/` (use `--dev` flag)
+- **Custom profile**: `--profile <name>` uses `~/.openclaw-<name>/`
 
-Docs: https://docs.molt.bot/cli
+Docs: https://docs.openclaw.ai/cli

@@ -1,6 +1,6 @@
-# moltbot-proot-kit
+# openclaw-proot-kit
 
-A lightweight wrapper for running a fork of **Moltbot** (formerly Clawdbot) as a **standalone Gateway service** on **Termux proot-distro Debian**, without `npx` and without `npm install -g`.
+A lightweight wrapper for running a fork of **OpenClaw** (formerly Clawdbot) as a **standalone Gateway service** on **Termux proot-distro Debian**, without `npx` and without `npm install -g`.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ corepack enable
 
 ## Layout
 
-- `moltbot-ac/` — the cloned Moltbot fork (git submodule)
+- `openclaw/` — the cloned OpenClaw fork (git submodule)
 - `config/` — environment configuration (`.env` for secrets)
 - `docs/` — additional documentation
 - `scripts/` — wrapper scripts
@@ -40,45 +40,45 @@ corepack enable
 
 ```bash
 # Clone with submodule
-git clone --recurse-submodules https://github.com/appautomaton/moltbot-proot-kit.git
-cd moltbot-proot-kit
+git clone --recurse-submodules https://github.com/appautomaton/openclaw-proot-kit.git
+cd openclaw-proot-kit
 
 # Install deps + build
-pnpm moltbot:install
-pnpm moltbot:ui:build
-pnpm moltbot:build
+pnpm openclaw:install
+pnpm openclaw:ui:build
+pnpm openclaw:build
 
 # Set up environment variables
 cp config/.env.template config/.env
 # Edit config/.env with your API keys and secrets
 
 # Initialize config/workspace
-pnpm moltbot setup --mode local --non-interactive
+pnpm openclaw setup --mode local --non-interactive
 
 # Start the Gateway
-pnpm moltbot gateway
+pnpm openclaw gateway
 ```
 
 ## Common Commands
 
 ```bash
-pnpm moltbot gateway              # Run the gateway
-pnpm moltbot gateway status       # Check gateway status
-pnpm moltbot sessions             # List sessions
-pnpm moltbot memory status        # Memory index status
-pnpm moltbot channels login       # Link WhatsApp (show QR)
-pnpm moltbot doctor               # Health checks
+pnpm openclaw gateway              # Run the gateway
+pnpm openclaw gateway status       # Check gateway status
+pnpm openclaw sessions             # List sessions
+pnpm openclaw memory status        # Memory index status
+pnpm openclaw channels login       # Link WhatsApp (show QR)
+pnpm openclaw doctor               # Health checks
 ```
 
 See `docs/COMMANDS.md` for full reference.
 
 ## Environment Variables
 
-Copy `config/.env.template` to `config/.env` and fill in your values. The wrapper script (`scripts/moltbot.mjs`) automatically loads this file. Leave fields empty if you don't use that feature.
+Copy `config/.env.template` to `config/.env` and fill in your values. The wrapper script (`scripts/openclaw.mjs`) automatically loads this file. Leave fields empty if you don't use that feature.
 
 ## Browser Automation (proot/headless-friendly)
 
-If you want a stable "external browser service" (Xvfb + Chromium with CDP) for Moltbot to attach to:
+If you want a stable "external browser service" (Xvfb + Chromium with CDP) for OpenClaw to attach to:
 
 ```bash
 chmod +x scripts/browser-service.sh
@@ -86,10 +86,10 @@ scripts/browser-service.sh start
 scripts/browser-service.sh status
 ```
 
-Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `~/.clawdbot/browser/clawd/user-data`.
+Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `~/.openclaw/browser/clawd/user-data`.
 
 ## Notes
 
-- **Profile**: This project uses the prod profile at `~/.clawdbot/` by default.
-- **`--dev` flag**: Only use if you need an isolated dev environment (`~/.clawdbot-dev/`, port 19001). Must come before the subcommand: `pnpm moltbot --dev gateway`, not `pnpm moltbot gateway --dev`.
-- **"node_modules missing" warning**: This is expected at the repo root. Ignore it or run commands with `pnpm --dir moltbot-ac moltbot ...`.
+- **Profile**: This project uses the prod profile at `~/.openclaw/` by default (legacy `~/.clawdbot/` is still supported).
+- **`--dev` flag**: Only use if you need an isolated dev environment (`~/.openclaw-dev/`, port 19001). Must come before the subcommand: `pnpm openclaw --dev gateway`, not `pnpm openclaw gateway --dev`.
+- **"node_modules missing" warning**: This is expected at the repo root. Ignore it or run commands with `pnpm --dir openclaw openclaw ...`.

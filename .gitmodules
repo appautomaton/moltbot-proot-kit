@@ -1,4 +1,4 @@
-[submodule "moltbot-ac"]
-	path = moltbot-ac
-	url = https://github.com/benjipeng/moltbot-ac.git
+[submodule "openclaw"]
+	path = openclaw
+	url = https://github.com/benjipeng/openclaw-ac.git
 	branch = fix/proot-debian

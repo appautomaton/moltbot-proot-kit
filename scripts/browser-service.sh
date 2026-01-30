@@ -8,10 +8,10 @@ display=":${display_num}"
 screen="${BROWSER_XVFB_SCREEN:-1280x720x24}"
 port="${BROWSER_CDP_PORT:-18800}"
 
-# Moltbot state lives under ~/.moltbot
+# OpenClaw state lives under ~/.openclaw
 profile="${BROWSER_PROFILE:-clawd}"
-user_data_dir="${BROWSER_USER_DATA_DIR:-$HOME/.moltbot/browser/${profile}/user-data}"
-state_dir="${BROWSER_STATE_DIR:-$HOME/.moltbot/browser/service/${profile}}"
+user_data_dir="${BROWSER_USER_DATA_DIR:-$HOME/.openclaw/browser/${profile}/user-data}"
+state_dir="${BROWSER_STATE_DIR:-$HOME/.openclaw/browser/service/${profile}}"
 
 xvfb_pid_file="${state_dir}/xvfb.pid"
 chrome_pid_file="${state_dir}/chrome.pid"
@@ -62,9 +62,9 @@ Environment overrides (optional):
   BROWSER_DISPLAY_NUM    X display number (default: 99)
   BROWSER_XVFB_SCREEN    Xvfb screen, e.g. 1280x720x24
   BROWSER_CDP_PORT       CDP remote debugging port (default: 18800)
-  BROWSER_PROFILE        Profile name used in ~/.moltbot/browser/<profile>/user-data (default: clawd)
-  BROWSER_USER_DATA_DIR  Override user-data-dir (default: ~/.moltbot/browser/<profile>/user-data)
-  BROWSER_STATE_DIR      Where to store pid/log files (default: ~/.moltbot/browser/service/<profile>)
+  BROWSER_PROFILE        Profile name used in ~/.openclaw/browser/<profile>/user-data (default: clawd)
+  BROWSER_USER_DATA_DIR  Override user-data-dir (default: ~/.openclaw/browser/<profile>/user-data)
+  BROWSER_STATE_DIR      Where to store pid/log files (default: ~/.openclaw/browser/service/<profile>)
 
 Notes:
   - This runs Chromium in "non-headless" mode on Xvfb (DISPLAY=:<num>), with CDP enabled.

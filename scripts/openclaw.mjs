@@ -46,7 +46,7 @@ const args = normalizeDevFlag(process.argv.slice(2));
 const envFile = path.join(__dirname, '..', 'config', '.env');
 loadEnvFile(envFile);
 
-const child = spawn('pnpm', ['--dir', 'moltbot-ac', 'moltbot', ...args], {
+const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {
   stdio: 'inherit',
   env: process.env,
 });
@@ -61,4 +61,3 @@ child.on('error', (err) => {
   console.error(err?.message ?? String(err));
   process.exit(1);
 });
-

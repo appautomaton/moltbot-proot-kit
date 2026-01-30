@@ -1,56 +1,56 @@
 # Custom Model Endpoints (OpenAI-style + Anthropic-style)
 
-This doc explains how Moltbot reads config, resolves an agent, and then talks to a **custom model endpoint** using:
+This doc explains how OpenClaw reads config, resolves an agent, and then talks to a **custom model endpoint** using:
 
 - **OpenAI-style** APIs (`openai-completions` or `openai-responses`) with a `baseUrl` + access token
 - **Anthropic-style** Messages API (`anthropic-messages`) with a `baseUrl` + access token
 
-It is written against the current `moltbot-ac/` source code (not guesses).
+It is written against the current `openclaw/` source code (not guesses).
 
 ---
 
 ## Terms (avoid confusion)
 
 ```
-You configure an UPSTREAM endpoint      Moltbot Gateway may ALSO expose an endpoint
+You configure an UPSTREAM endpoint      OpenClaw Gateway may ALSO expose an endpoint
 for the agent to call:                 for other clients to call:
 
   models.providers.*.baseUrl  ---->      POST /v1/chat/completions   (optional)
   models.providers.*.apiKey            POST /v1/responses           (optional)
 ```
 
-- **Upstream endpoint**: the model server you want Moltbot to call (you provide `baseUrl` + token).
-- **Gateway endpoint**: Moltbot’s own HTTP server endpoints (OpenAI-compatible). This is separate.
+- **Upstream endpoint**: the model server you want OpenClaw to call (you provide `baseUrl` + token).
+- **Gateway endpoint**: OpenClaw’s own HTTP server endpoints (OpenAI-compatible). This is separate.
 
 ---
 
-## How Moltbot reads config and “creates agents” (actual code path)
+## How OpenClaw reads config and “creates agents” (actual code path)
 
 ### 1) Config load pipeline
 
-At runtime, Moltbot loads config via `loadConfig()`:
+At runtime, OpenClaw loads config via `loadConfig()`:
 
-- Config file location is controlled by `MOLTBOT_CONFIG_PATH` (preferred) or `CLAWDBOT_CONFIG_PATH` (legacy).
+- Config file location is controlled by `OPENCLAW_CONFIG_PATH` (preferred) or `CLAWDBOT_CONFIG_PATH` (legacy).
   If unset, it defaults to:
-  - state dir: `~/.moltbot`
-  - config path: `~/.moltbot/moltbot.json`
+  - state dir: `~/.openclaw`
+  - config path: `~/.openclaw/openclaw.json`
 
-- Reads `moltbot.json` (or legacy `clawdbot.json`) as **JSON5**
+- Reads `openclaw.json` (or legacy `clawdbot.json`) as **JSON5**
 - Resolves `$include` directives
 - Applies `${ENV_VAR}` substitutions (uppercase vars only)
 - Validates against the Zod schema
 - Applies defaults + normalizes paths
 
 Code references:
-- `moltbot-ac/src/config/io.ts` (the `createConfigIO().loadConfig()` pipeline)
-- `moltbot-ac/src/config/paths.ts` (state dir + config path resolution, incl. legacy compatibility)
-- `moltbot-ac/src/cli/profile.ts` (CLI `--dev` / `--profile` parsing and env defaults)
-- `moltbot-ac/src/config/env-substitution.ts` (`${ENV_VAR}` support)
-- `moltbot-ac/src/config/zod-schema.*.ts` (schema)
+- `openclaw/src/config/io.ts` (the `createConfigIO().loadConfig()` pipeline)
+- `openclaw/src/config/paths.ts` (state dir + config path resolution, incl. legacy compatibility)
+- `openclaw/src/cli/profile.ts` (CLI `--dev` / `--profile` parsing and env defaults)
+- `openclaw/src/config/env-substitution.ts` (`${ENV_VAR}` support)
+- `openclaw/src/config/zod-schema.*.ts` (schema)
 
 ### 2) Agent resolution (multi-agent)
 
-Agents are config entries; they are not separate processes. On each run, Moltbot resolves:
+Agents are config entries; they are not separate processes. On each run, OpenClaw resolves:
 
 - `agentId` (from session key or request header/model hint)
 - `workspaceDir` (where it reads `AGENTS.md`, `MEMORY.md`, etc.)
@@ -61,9 +61,9 @@ Key logic:
 - Non-default agents get a different default workspace unless you override it.
 
 Code references:
-- `moltbot-ac/src/agents/agent-scope.ts` (`resolveDefaultAgentId`, `resolveAgentWorkspaceDir`, `resolveAgentDir`)
-- `moltbot-ac/src/commands/agent.ts` (loads config → resolves agentId/workspaceDir/agentDir → runs agent)
-- `moltbot-ac/src/gateway/http-utils.ts` (Gateway HTTP routes choose agentId from headers/model)
+- `openclaw/src/agents/agent-scope.ts` (`resolveDefaultAgentId`, `resolveAgentWorkspaceDir`, `resolveAgentDir`)
+- `openclaw/src/commands/agent.ts` (loads config → resolves agentId/workspaceDir/agentDir → runs agent)
+- `openclaw/src/gateway/http-utils.ts` (Gateway HTTP routes choose agentId from headers/model)
 
 ### Control UI note: why a new agent “doesn’t show up” until you run it once
 
@@ -73,23 +73,23 @@ So after you add `agents.list[]`, you may not see `agent:<id>:main` in Sessions 
 Create/initialize the session (either one):
 
 ```bash
-pnpm moltbot --dev agent --agent kimi --message "hi"
+pnpm openclaw --dev agent --agent kimi --message "hi"
 ```
 
 Reuse the same session (stable key, no new session key):
 
 ```bash
-pnpm moltbot --dev agent --agent kimi --session-key agent:kimi:main --message "..."
+pnpm openclaw --dev agent --agent kimi --session-key agent:kimi:main --message "..."
 ```
 
 List sessions from the CLI:
 
 ```bash
 # Default agent (resolved from config; usually agent:main)
-pnpm moltbot --dev sessions
+pnpm openclaw --dev sessions
 
 # A specific agent’s store (example: kimi)
-pnpm moltbot --dev sessions --store ~/.moltbot/agents/kimi/sessions/sessions.json
+pnpm openclaw --dev sessions --store ~/.openclaw/agents/kimi/sessions/sessions.json
 ```
 
 ---
@@ -106,7 +106,7 @@ You define a provider key (any string, e.g. `custom-proxy`) and specify:
 - `models`: at least one `{ id, name }`
 
 Schema reference:
-- `moltbot-ac/src/config/types.models.ts` (`ModelProviderConfig`, `ModelApi`)
+- `openclaw/src/config/types.models.ts` (`ModelProviderConfig`, `ModelApi`)
 
 ### Step 2) Point an agent at `providerKey/modelId`
 
@@ -116,8 +116,8 @@ Set either:
 - per-agent override: `agents.list[].model`
 
 Schema reference:
-- `moltbot-ac/src/config/zod-schema.agent-defaults.ts` (defaults model shape)
-- `moltbot-ac/src/config/zod-schema.agent-runtime.ts` (per-agent model accepts string or `{primary,fallbacks}`)
+- `openclaw/src/config/zod-schema.agent-defaults.ts` (defaults model shape)
+- `openclaw/src/config/zod-schema.agent-runtime.ts` (per-agent model accepts string or `{primary,fallbacks}`)
 
 ### Example: OpenAI Chat Completions-style upstream
 
@@ -147,8 +147,8 @@ This assumes your upstream implements an OpenAI-compatible **Chat Completions** 
 ```
 
 Notes (from code, not vibes):
-- Missing model fields like `contextWindow/maxTokens/cost/input/reasoning` are defaulted by config defaults. See `moltbot-ac/src/config/defaults.ts` (`applyModelDefaults`).
-- For OpenAI-style providers, Moltbot’s own implicit providers use `/v1` in `baseUrl` (examples: Moonshot/Ollama). See `moltbot-ac/src/agents/models-config.providers.ts`.
+- Missing model fields like `contextWindow/maxTokens/cost/input/reasoning` are defaulted by config defaults. See `openclaw/src/config/defaults.ts` (`applyModelDefaults`).
+- For OpenAI-style providers, OpenClaw’s own implicit providers use `/v1` in `baseUrl` (examples: Moonshot/Ollama). See `openclaw/src/agents/models-config.providers.ts`.
 
 ### Example: OpenAI Responses-style upstream
 
@@ -180,7 +180,7 @@ Use this only if your upstream implements the OpenAI **Responses** API.
 
 ## Configure a custom **Anthropic-style** upstream model endpoint (baseUrl + token)
 
-Moltbot supports calling Anthropic **Messages** API via:
+OpenClaw supports calling Anthropic **Messages** API via:
 
 - provider `api: "anthropic-messages"`
 
@@ -219,24 +219,24 @@ Example (custom Anthropic-compatible proxy):
 ```
 
 Important nuance:
-- Anthropic shorthand normalization like `anthropic/opus-4.5 -> anthropic/claude-opus-4-5` only happens when the provider id is exactly `anthropic`. For custom provider keys (like `anthropic-proxy`), use the full model id. See `moltbot-ac/src/agents/model-selection.ts`.
+- Anthropic shorthand normalization like `anthropic/opus-4.5 -> anthropic/claude-opus-4-5` only happens when the provider id is exactly `anthropic`. For custom provider keys (like `anthropic-proxy`), use the full model id. See `openclaw/src/agents/model-selection.ts`.
 
 Anthropic-style baseUrl example in this repo:
-- MiniMax exposes an Anthropic-compatible endpoint at `https://api.minimax.io/anthropic` (note: not `/v1`). See `moltbot-ac/src/agents/models-config.providers.ts`.
+- MiniMax exposes an Anthropic-compatible endpoint at `https://api.minimax.io/anthropic` (note: not `/v1`). See `openclaw/src/agents/models-config.providers.ts`.
 
 ---
 
 ## Where does the access token come from?
 
-Moltbot resolves provider API keys in this order:
+OpenClaw resolves provider API keys in this order:
 
 1) `auth-profiles.json` (profile rotation supported)
 2) environment variables for **built-in provider ids** (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.)
 3) `models.providers.<providerKey>.apiKey` from config
 
 Code references:
-- `moltbot-ac/src/agents/model-auth.ts` (`resolveApiKeyForProvider`)
-- `moltbot-ac/src/agents/auth-profiles/store.ts` (main + per-agent store merge)
+- `openclaw/src/agents/model-auth.ts` (`resolveApiKeyForProvider`)
+- `openclaw/src/agents/auth-profiles/store.ts` (main + per-agent store merge)
 
 If your provider key is custom (e.g. `custom-proxy`), there is **no built-in env var mapping**. Use either:
 
@@ -262,13 +262,13 @@ Not currently.
 
 The Gateway can serve OpenAI-compatible HTTP endpoints (when enabled):
 
-- `POST /v1/chat/completions` (see `moltbot-ac/src/gateway/openai-http.ts`)
-- `POST /v1/responses` (see `moltbot-ac/src/gateway/openresponses-http.ts`)
+- `POST /v1/chat/completions` (see `openclaw/src/gateway/openai-http.ts`)
+- `POST /v1/responses` (see `openclaw/src/gateway/openresponses-http.ts`)
 
 Those routes are conditionally enabled by config:
 - `gateway.http.endpoints.chatCompletions.enabled`
 - `gateway.http.endpoints.responses.enabled`
 
-See `moltbot-ac/src/gateway/server-http.ts` and option docs in `moltbot-ac/src/gateway/server.impl.ts`.
+See `openclaw/src/gateway/server-http.ts` and option docs in `openclaw/src/gateway/server.impl.ts`.
 
 If you need `POST /v1/messages` (Anthropic) as a Gateway server endpoint, that would require new server code; there is no `anthropic-http.ts` equivalent today.

@@ -6,7 +6,7 @@
 
 | Aspect              | Main agent                        | Non-main agent (e.g. `kimi`)       |
 |---------------------|-----------------------------------|------------------------------------|
-| Session store       | `~/.clawdbot/agents/main/...`     | `~/.clawdbot/agents/<id>/...`      |
+| Session store       | `~/.openclaw/agents/main/...`     | `~/.openclaw/agents/<id>/...`      |
 | Skills refresh      | Gateway auto-refreshes            | CLI reuses cached snapshot         |
 | Sandbox (`non-main`)| Runs direct                       | May be sandboxed                   |
 
@@ -14,9 +14,9 @@
 
 | Term             | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| Agent ID         | Configured agent name (e.g. `main`, `kimi`) from `config/moltbot.json`      |
+| Agent ID         | Configured agent name (e.g. `main`, `kimi`) from `config/openclaw.json`      |
 | Session key      | Stable identifier like `agent:kimi:main` for state lookup                   |
-| State dir        | `~/.clawdbot/` (override via `MOLTBOT_STATE_DIR`)                           |
+| State dir        | `~/.openclaw/` (override via `OPENCLAW_STATE_DIR`, legacy `~/.clawdbot/` supported) |
 | Workspace        | Working directory for files/repo ops (e.g. `~/clawd-dev`)                   |
 | Skills snapshot  | Cached skill list stored in session entry (`skillsSnapshot`)                |
 
@@ -50,22 +50,22 @@ Switching session keys to refresh skills may also change sandbox policy, filesys
 
 ## Adding a Non-Main Agent
 
-Adding an agent to `config/moltbot.json` is not enough - you must also register it:
+Adding an agent to `config/openclaw.json` is not enough - you must also register it:
 
 ```bash
-pnpm moltbot agents add kimi
+pnpm openclaw agents add kimi
 ```
 
-This creates the agent's state directory (`~/.clawdbot/agents/kimi/`) so the gateway/frontend recognizes it.
+This creates the agent's state directory (`~/.openclaw/agents/kimi/`) so the gateway/frontend recognizes it.
 
 ## Commands
 
 | Action                  | Command                                                                      |
 |-------------------------|------------------------------------------------------------------------------|
-| Register new agent      | `pnpm moltbot agents add <id>`                                               |
-| List configured agents  | `pnpm moltbot agents list`                                                   |
-| List main sessions      | `pnpm moltbot sessions`                                                      |
-| List kimi sessions      | `pnpm moltbot sessions --store ~/.clawdbot/agents/kimi/sessions/sessions.json` |
+| Register new agent      | `pnpm openclaw agents add <id>`                                               |
+| List configured agents  | `pnpm openclaw agents list`                                                   |
+| List main sessions      | `pnpm openclaw sessions`                                                      |
+| List kimi sessions      | `pnpm openclaw sessions --store ~/.openclaw/agents/kimi/sessions/sessions.json` |
 
 ## Refreshing Skills / Starting a New Session
 
@@ -84,4 +84,3 @@ The CLI has no `--session-key` or `--new-session` flag. Sessions are identified 
 - [ ] Correct agent session store? (`main` vs `kimi`)
 - [ ] Correct session key? (`agent:<id>:main` vs other)
 - [ ] Stale `skillsSnapshot`? Refresh before debugging PATH/binaries
-
