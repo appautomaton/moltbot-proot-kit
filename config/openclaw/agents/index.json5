@@ -1,0 +1,10 @@
+{
+  defaults: { $include: "./defaults.json5" },
+  list: [
+    { $include: "./list/main.json5" },
+    { $include: "./list/gemini.json5" },
+    { $include: "./list/sandbox-moltbook.json5" },
+    { $include: "./list/coder-cli.json5" },
+    { $include: "./list/writer.json5" },
+  ],
+}

@@ -1,0 +1,18 @@
+{
+  agents: { $include: "./agents/index.json5" },
+  auth: { $include: "./auth.json5" },
+  bindings: { $include: "./bindings.json5" },
+  browser: { $include: "./browser.json5" },
+  channels: { $include: "./channels.json5" },
+  commands: { $include: "./commands.json5" },
+  gateway: { $include: "./gateway.json5" },
+  hooks: { $include: "./hooks.json5" },
+  messages: { $include: "./messages.json5" },
+  meta: { $include: "./meta.json5" },
+  models: { $include: "./models.json5" },
+  plugins: { $include: "./plugins.json5" },
+  skills: { $include: "./skills.json5" },
+  tools: { $include: "./tools.json5" },
+  ui: { $include: "./ui.json5" },
+  wizard: { $include: "./wizard.json5" }
+}

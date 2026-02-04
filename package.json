@@ -1,0 +1,11 @@
+{
+  "name": "openclaw-platform",
+  "private": true,
+  "packageManager": "pnpm@10.23.0",
+  "scripts": {
+    "openclaw": "node scripts/openclaw.mjs",
+    "openclaw:install": "pnpm --dir openclaw install",
+    "openclaw:build": "pnpm --dir openclaw build",
+    "openclaw:ui:build": "pnpm --dir openclaw ui:build"
+  }
+}

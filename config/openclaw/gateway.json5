@@ -1,0 +1,9 @@
+{
+  "port": 18789,
+  "mode": "local",
+  "bind": "loopback",
+  "tailscale": {
+    "mode": "off",
+    "resetOnExit": false
+  }
+}

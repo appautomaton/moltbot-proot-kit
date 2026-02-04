@@ -1,0 +1,12 @@
+{
+  internal: {
+    enabled: true,
+    entries: {
+      // Keep only session-memory enabled; disable other bundled hooks to reduce noise.
+      "boot-md": { enabled: false },
+      "command-logger": { enabled: false },
+      "session-memory": { enabled: true },
+      "soul-evil": { enabled: false },
+    },
+  },
+}

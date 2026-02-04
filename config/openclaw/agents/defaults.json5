@@ -1,0 +1,41 @@
+{
+  "model": {
+    "primary": "openai-codex/gpt-5.2",
+    "fallbacks": [
+      "google-antigravity/claude-opus-4-5-thinking",
+      "google-antigravity/claude-sonnet-4-5-thinking",
+      "google-antigravity/gemini-3-pro-high"
+    ]
+  },
+  "models": {
+    "nvidia-integrate/z-ai/glm4.7": {},
+    "google-antigravity/claude-opus-4-5-thinking": {},
+    "google-antigravity/claude-sonnet-4-5-thinking": {},
+    "google-antigravity/gemini-3-pro-high": {},
+    "google-antigravity/gemini-3-pro-low": {},
+    "openai-codex/gpt-5.2": {}
+  },
+  "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
+  "memorySearch": {
+    "provider": "local",
+    "remote": {
+      "batch": {
+        "enabled": false
+      }
+    }
+  },
+  "compaction": {
+    "mode": "safeguard"
+  },
+  "thinkingDefault": "medium",
+  "heartbeat": {
+    "every": "1h"
+  },
+  "maxConcurrent": 3,
+  "subagents": {
+    "maxConcurrent": 8
+  },
+  "sandbox": {
+    "mode": "off"
+  }
+}

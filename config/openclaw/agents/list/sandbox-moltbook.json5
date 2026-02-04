@@ -1,0 +1,59 @@
+{
+  "id": "sandbox-moltbook",
+  "workspace": "${OPENCLAW_STATE_DIR}/workspaces/sandboxes-moltbook",
+  "model": {
+    "primary": "google-antigravity/gemini-3-pro-high",
+    "fallbacks": [
+      "google-antigravity/gemini-3-pro-low"
+    ]
+  },
+  "sandbox": {
+    "mode": "all",
+    "workspaceAccess": "rw",
+    "scope": "agent",
+    "workspaceRoot": "${OPENCLAW_STATE_DIR}/workspaces/sandboxes-moltbook",
+    "docker": {
+      "image": "localhost/openclaw-sandbox-slim:latest",
+      "network": "bridge",
+      "env": {
+        "MOLTBOOK_API_KEY": "${MOLTBOOK_API_KEY}"
+      }
+    }
+  },
+  "tools": {
+    "profile": "full",
+    "deny": [
+      "nodes",
+      "gateway",
+      "cron",
+      "browser",
+      "canvas"
+    ],
+    "exec": {
+      "host": "sandbox",
+      "security": "full",
+      "ask": "off"
+    },
+    "sandbox": {
+      "tools": {
+        "allow": [
+          "exec",
+          "process",
+          "bash",
+          "read",
+          "write",
+          "edit",
+          "glob",
+          "grep",
+          "image"
+        ],
+        "deny": [
+          "browser",
+          "cron",
+          "nodes",
+          "gateway"
+        ]
+      }
+    }
+  }
+}

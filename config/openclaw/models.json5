@@ -1,0 +1,59 @@
+{
+  "providers": {
+    "nvidia-integrate": {
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "apiKey": "${NVIDIA_INTEGRATE_API_KEY}",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "moonshotai/kimi-k2.5",
+          "name": "Kimi K2.5 (NVIDIA Integrate)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "minimaxai/minimax-m2.1",
+          "name": "MiniMax M2.1 (NVIDIA Integrate)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 8192
+        },
+        {
+          "id": "z-ai/glm4.7",
+          "name": "GLM 4.7 (NVIDIA Integrate)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "allow": [
+    "telegram",
+    "memory-core",
+    "google-antigravity-auth"
+  ],
+  "entries": {
+    "google-antigravity-auth": {
+      "enabled": true
+    },
+    "memory-core": {
+      "enabled": true
+    },
+    "telegram": {
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "main",
+  "default": true,
+  "groupChat": {
+    "mentionPatterns": [
+      "\\b@?ac_m1p_default_bot\\b"
+    ]
+  },
+  "subagents": {
+    "allowAgents": [
+      "gemini",
+      "coder-cli"
+    ]
+  },
+  "tools": {
+    "profile": "full",
+    "allow": [
+      "group:web",
+      "group:fs",
+      "group:runtime",
+      "group:sessions",
+      "group:memory",
+      "browser"
+    ],
+    "deny": [
+      "apply_patch",
+      "gateway",
+      "nodes",
+      "cron",
+      "canvas"
+    ]
+  }
+}

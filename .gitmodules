@@ -1,0 +1,4 @@
+[submodule "openclaw"]
+	path = openclaw
+	url = https://github.com/benjipeng/openclaw-ac.git
+	branch = macos-local

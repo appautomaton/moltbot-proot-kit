@@ -1,0 +1,56 @@
+{
+  "id": "coder-cli",
+  "workspace": "${OPENCLAW_STATE_DIR}/workspaces/code-cli",
+  "model": "openai-codex/gpt-5.2",
+  "groupChat": {
+    "mentionPatterns": [
+      "\\b@?ac_m1p_coder_bot\\b"
+    ]
+  },
+  "sandbox": {
+    "mode": "all",
+    "workspaceAccess": "rw",
+    "scope": "agent",
+    "workspaceRoot": "${OPENCLAW_STATE_DIR}/workspaces/code-cli",
+    "docker": {
+      "image": "localhost/openclaw-sandbox-code-cli:bookworm-slim",
+      "readOnlyRoot": false,
+      "network": "bridge"
+    }
+  },
+  "tools": {
+    "profile": "full",
+    "allow": [
+      "group:fs",
+      "group:runtime",
+      "group:sessions",
+      "memory_search",
+      "memory_get",
+      "group:web"
+    ],
+    "deny": [
+      "browser",
+      "canvas",
+      "gateway",
+      "nodes",
+      "cron"
+    ],
+    "exec": {
+      "host": "sandbox",
+      "security": "full",
+      "ask": "off"
+    },
+    "sandbox": {
+      "tools": {
+        "allow": [
+          "group:fs",
+          "group:runtime",
+          "group:sessions",
+          "memory_search",
+          "memory_get",
+          "group:web"
+        ]
+      }
+    }
+  }
+}

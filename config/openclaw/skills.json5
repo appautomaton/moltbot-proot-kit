@@ -1,0 +1,8 @@
+{
+  // Intentionally block all "openclaw-bundled" skills (openclaw/skills/*).
+  // Workspace skills (bots/workspaces/*/skills/*) are not affected.
+  allowBundled: ["__none__"],
+  install: {
+    nodeManager: "pnpm",
+  },
+}

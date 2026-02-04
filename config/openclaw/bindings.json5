@@ -1,0 +1,23 @@
+[
+  {
+    agentId: "main",
+    match: {
+      channel: "telegram",
+      accountId: "default",
+    },
+  },
+  {
+    agentId: "coder-cli",
+    match: {
+      channel: "telegram",
+      accountId: "coder-cli",
+    },
+  },
+  {
+    agentId: "writer",
+    match: {
+      channel: "telegram",
+      accountId: "writer",
+    },
+  },
+]

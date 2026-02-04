@@ -1,0 +1,4 @@
+# Local-only build artifacts
+*.log
+.DS_Store
+

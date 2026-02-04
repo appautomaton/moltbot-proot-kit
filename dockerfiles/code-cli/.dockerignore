@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!config.toml
+!auth.json
+!.dockerignore
+!README.md

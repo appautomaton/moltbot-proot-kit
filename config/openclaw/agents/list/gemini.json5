@@ -1,0 +1,13 @@
+{
+  "id": "gemini",
+  "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
+  "model": {
+    "primary": "google-antigravity/gemini-3-pro-high",
+    "fallbacks": [
+      "google-antigravity/gemini-3-pro-low"
+    ]
+  },
+  "tools": {
+    "profile": "minimal"
+  }
+}

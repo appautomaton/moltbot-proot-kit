@@ -1,0 +1,3 @@
+{
+  $include: "../config/openclaw/openclaw.json5"
+}

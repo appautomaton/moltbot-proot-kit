@@ -1,0 +1,60 @@
+{
+  "profile": "minimal",
+  "web": {
+    "search": {
+      "enabled": true,
+      "provider": "perplexity",
+      "perplexity": {
+        "apiKey": "${PERPLEXITY_API_KEY}",
+        "baseUrl": "https://api.perplexity.ai/v2",
+        "model": "sonar-pro"
+      }
+    },
+    "fetch": {
+      "enabled": true
+    }
+  },
+  "agentToAgent": {
+    "enabled": false,
+    "allow": []
+  },
+  "elevated": {
+    "enabled": false
+  },
+  "exec": {
+    "host": "sandbox",
+    "security": "allowlist",
+    "ask": "off",
+    "applyPatch": {
+      "enabled": true
+    },
+    "safeBins": [
+      "bash",
+      "sh",
+      "curl",
+      "jq",
+      "cat",
+      "ls",
+      "find",
+      "grep",
+      "sed",
+      "head",
+      "tail",
+      "env",
+      "printenv",
+      "id",
+      "uname"
+    ]
+  },
+  "subagents": {
+    "tools": {
+      "deny": [
+        "gateway",
+        "nodes",
+        "cron",
+        "browser",
+        "canvas"
+      ]
+    }
+  }
+}
