@@ -2,6 +2,7 @@
 
 Monorepo-style **OpenClaw** workspace for local usage + development (git submodule in `openclaw/`) with modular JSON5 config and optional Docker sandboxes.
 
+- **English** (this file) · **中文**: [`README.zh-CN.md`](README.zh-CN.md)
 - Run everything via `pnpm openclaw ...` (wrapper: [`scripts/openclaw.mjs`](scripts/openclaw.mjs))
 - Commit-safe config lives in [`config/openclaw/`](config/openclaw/) (split into modular JSON5 files)
 - Repo-local state lives in `bots/` (gitignored; migration notes in [`bots/README.md`](bots/README.md))
@@ -15,6 +16,12 @@ Monorepo-style **OpenClaw** workspace for local usage + development (git submodu
 > `config/.env` and `bots/` contain secrets/state. Keep them out of git.
 >
 > This repo intentionally tracks only `bots/README.md` and `bots/openclaw.json` under `bots/`.
+
+## What this repo gives you
+
+- A predictable, repo-local OpenClaw setup: config + workspaces + state live together under this repo folder (instead of `~/.openclaw/`).
+- Modular JSON5 config you can edit/review in git (secrets stay in `config/.env`, never in JSON5).
+- Optional Docker sandbox images for agents that need extra system dependencies (LibreOffice, OCR, etc.).
 
 ## Contents
 
@@ -36,6 +43,9 @@ Monorepo-style **OpenClaw** workspace for local usage + development (git submodu
 ## Quick start
 
 ```bash
+git clone --recurse-submodules https://github.com/appautomaton/openclaw-monorepo.git
+cd openclaw-monorepo
+
 git submodule update --init --recursive
 
 corepack enable
@@ -79,10 +89,10 @@ flowchart TD
 All paths below are relative to the repo root.
 
 - [`openclaw/`](openclaw/) — OpenClaw submodule (pnpm workspace; build output in `openclaw/dist/`)
-- [`scripts/`](scripts/) — wrapper entrypoint that loads `config/.env` (see [`config/.env.template`](config/.env.template))
+- [`scripts/`](scripts/) — wrapper entrypoint (see [`scripts/README.md`](scripts/README.md))
 - [`config/`](config/) — versioned config (commit-safe) + `config/.env.template`
 - `bots/` — repo-local OpenClaw state dir (gitignored; see [`bots/README.md`](bots/README.md))
-- [`dockerfiles/`](dockerfiles/) — Docker build contexts for sandbox images used by agents
+- [`dockerfiles/`](dockerfiles/) — Docker build contexts for sandbox images (see [`dockerfiles/README.md`](dockerfiles/README.md))
 - [`docs/`](docs/) — extra docs for this repo
 
 Architecture notes: [`ARCHITECTURE.md`](ARCHITECTURE.md)
@@ -130,7 +140,8 @@ pnpm openclaw nodes status
 
 ## Sandboxed agents (Docker)
 
-Only needed if an agent config uses `sandbox.docker.image`.
+Only needed if an agent config uses `sandbox.docker.image` (i.e., you actually enabled Docker sandboxing for that agent).
+Example: `config/openclaw/agents/list/writer.json5` sets `"image": "localhost/openclaw-sandbox-writer:bookworm"`.
 
 ```bash
 docker build -f dockerfiles/writer/Dockerfile -t localhost/openclaw-sandbox-writer:bookworm dockerfiles/writer
