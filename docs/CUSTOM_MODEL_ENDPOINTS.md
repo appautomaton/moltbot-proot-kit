@@ -139,7 +139,7 @@ This assumes your upstream implements an OpenAI-compatible **Chat Completions** 
   },
   "agents": {
     "defaults": {
-      "workspace": "/home/dev/clawd-dev",
+      "workspace": "${AGENT_WORKSPACE}",
       "model": { "primary": "custom-proxy/llama-3.1-8b" }
     }
   }
@@ -205,12 +205,12 @@ Example (custom Anthropic-compatible proxy):
       {
         "id": "main",
         "default": true,
-        "workspace": "/home/dev/clawd-dev",
+        "workspace": "${AGENT_WORKSPACE}",
         "model": "openai-codex/gpt-5.2"
       },
       {
         "id": "claude",
-        "workspace": "/home/dev/clawd-dev",
+        "workspace": "${AGENT_WORKSPACE}",
         "model": "anthropic-proxy/claude-opus-4-5"
       }
     ]

@@ -1,0 +1,9 @@
+{
+  "browser": {
+    "enabled": true,
+    "executablePath": "${BROWSER_EXECUTABLE_PATH}",
+    "headless": true,
+    "noSandbox": true,
+    "defaultProfile": "openclaw"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "env": {
+    "vars": {
+      "MOLTBOOK_API_KEY": "${MOLTBOOK_API_KEY}"
+    }
+  }
+}

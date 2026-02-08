@@ -1,9 +1,11 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.join(__dirname, '..');
 
 /**
  * Load .env file and inject into process.env (without overriding existing values).
@@ -25,12 +27,42 @@ function loadEnvFile(envPath) {
         value = value.slice(1, -1);
       }
       // Only set if not already defined and value is non-empty
-      if (!process.env[key] && value.length > 0) {
+      if (process.env[key] === undefined && value.length > 0) {
         process.env[key] = value;
       }
     }
   } catch {
     // .env file doesn't exist or can't be read - that's fine
+  }
+}
+
+function hasNonEmpty(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function resolveUserPathFromRepoRoot(input) {
+  const trimmed = typeof input === 'string' ? input.trim() : '';
+  if (!trimmed) return input;
+
+  // Expand "~" the same way OpenClaw does.
+  if (trimmed.startsWith('~')) {
+    const expanded = trimmed.replace(/^~(?=$|[\\/])/, os.homedir());
+    return path.resolve(expanded);
+  }
+
+  if (path.isAbsolute(trimmed)) {
+    return trimmed;
+  }
+
+  // Treat relative paths as relative to the repo root (not openclaw/ and not CWD).
+  return path.resolve(REPO_ROOT, trimmed);
+}
+
+function normalizeRepoRelativePathEnvVars(keys) {
+  for (const key of keys) {
+    const raw = process.env[key];
+    if (!hasNonEmpty(raw)) continue;
+    process.env[key] = resolveUserPathFromRepoRoot(raw);
   }
 }
 
@@ -43,8 +75,34 @@ function normalizeDevFlag(args) {
 const args = normalizeDevFlag(process.argv.slice(2));
 
 // Load config/.env for API keys and secrets
-const envFile = path.join(__dirname, '..', 'config', '.env');
+const envFile = path.join(REPO_ROOT, 'config', '.env');
 loadEnvFile(envFile);
+
+// Normalize repo-relative path env vars (so values like "bots" resolve to <repo>/bots).
+normalizeRepoRelativePathEnvVars([
+  'OPENCLAW_STATE_DIR',
+  'CLAWDBOT_STATE_DIR',
+  'OPENCLAW_CONFIG_PATH',
+  'CLAWDBOT_CONFIG_PATH',
+  'AGENT_WORKSPACE',
+  'XDG_CONFIG_HOME',
+]);
+
+// Compatibility aliases:
+// - OpenClaw expects OPENCLAW_GATEWAY_TOKEN (and friends).
+// - This platform historically used GATEWAY_AUTH_TOKEN in config/.env and config/openclaw.json.
+if (
+  !hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN) &&
+  hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN)
+) {
+  process.env.OPENCLAW_GATEWAY_TOKEN = process.env.GATEWAY_AUTH_TOKEN;
+}
+if (
+  !hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN) &&
+  hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN)
+) {
+  process.env.GATEWAY_AUTH_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN;
+}
 
 const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {
   stdio: 'inherit',

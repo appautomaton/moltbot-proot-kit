@@ -6,7 +6,7 @@
 
 | Aspect              | Main agent                        | Non-main agent (e.g. `kimi`)       |
 |---------------------|-----------------------------------|------------------------------------|
-| Session store       | `~/.openclaw/agents/main/...`     | `~/.openclaw/agents/<id>/...`      |
+| Session store       | `<STATE_DIR>/agents/main/...`     | `<STATE_DIR>/agents/<id>/...`      |
 | Skills refresh      | Gateway auto-refreshes            | CLI reuses cached snapshot         |
 | Sandbox (`non-main`)| Runs direct                       | May be sandboxed                   |
 
@@ -16,9 +16,11 @@
 |------------------|-----------------------------------------------------------------------------|
 | Agent ID         | Configured agent name (e.g. `main`, `kimi`) from `config/openclaw.json`      |
 | Session key      | Stable identifier like `agent:kimi:main` for state lookup                   |
-| State dir        | `~/.openclaw/` (override via `OPENCLAW_STATE_DIR`, legacy `~/.clawdbot/` supported) |
-| Workspace        | Working directory for files/repo ops (e.g. `~/clawd-dev`)                   |
+| State dir        | Resolved from `OPENCLAW_STATE_DIR` (default `~/.openclaw/`; legacy `~/.clawdbot/` supported) |
+| Workspace        | Working directory for files/repo ops (e.g. `./workspace`)                  |
 | Skills snapshot  | Cached skill list stored in session entry (`skillsSnapshot`)                |
+
+In this wrapper, if `config/.env` sets `OPENCLAW_STATE_DIR=bots`, then `<STATE_DIR>` resolves to `<repo>/bots`.
 
 ## Why Non-Main Agents Lag on Skills
 
@@ -56,7 +58,7 @@ Adding an agent to `config/openclaw.json` is not enough - you must also register
 pnpm openclaw agents add kimi
 ```
 
-This creates the agent's state directory (`~/.openclaw/agents/kimi/`) so the gateway/frontend recognizes it.
+This creates the agent's state directory (`<STATE_DIR>/agents/kimi/`) so the gateway/frontend recognizes it.
 
 ## Commands
 
@@ -65,11 +67,11 @@ This creates the agent's state directory (`~/.openclaw/agents/kimi/`) so the gat
 | Register new agent      | `pnpm openclaw agents add <id>`                                               |
 | List configured agents  | `pnpm openclaw agents list`                                                   |
 | List main sessions      | `pnpm openclaw sessions`                                                      |
-| List kimi sessions      | `pnpm openclaw sessions --store ~/.openclaw/agents/kimi/sessions/sessions.json` |
+| List kimi sessions      | `pnpm openclaw sessions --store <STATE_DIR>/agents/kimi/sessions/sessions.json` |
 
 ## Refreshing Skills / Starting a New Session
 
-The CLI has no `--session-key` or `--new-session` flag. Sessions are identified by a derived key (e.g. `agent:kimi:main`) and reset automatically based on policy (daily at 4am or after idle timeout).
+The CLI has no `--session-key` or `--new-session` flag. It does support `--session-id` for explicitly targeting an existing session. Otherwise sessions are identified by a derived key (e.g. `agent:kimi:main`) and reset automatically based on policy (daily at 4am or after idle timeout).
 
 **Manual options:**
 

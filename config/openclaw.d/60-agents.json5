@@ -1,0 +1,93 @@
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.2",
+        "fallbacks": [
+          "google-antigravity/claude-opus-4-5-thinking",
+          "google-antigravity/claude-sonnet-4-5-thinking",
+          "google-antigravity/gemini-3-pro-high"
+        ]
+      },
+      "models": {
+        "openai-codex/gpt-5.2": {},
+        "google-antigravity/claude-opus-4-5-thinking": {},
+        "google-antigravity/claude-sonnet-4-5-thinking": {},
+        "google-antigravity/gemini-3-pro-high": {},
+        "google-antigravity/gemini-3-pro-low": {}
+      },
+      "workspace": "${AGENT_WORKSPACE}/writer",
+      "userTimezone": "America/New_York",
+      "memorySearch": {
+        "provider": "local",
+        "remote": {
+          "apiKey": "${GEMINI_MEMORY_API_KEY}",
+          "batch": {
+            "enabled": false
+          }
+        }
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "thinkingDefault": "high",
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "heartbeat": {
+        "every": "1h",
+        "activeHours": {
+          "start": "07:00",
+          "end": "22:00",
+          "timezone": "user"
+        }
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "subagents": {
+          // Allow main agent to spawn subagents under the Kimi agent id.
+          // This keeps subagent auth + model selection isolated to that agent.
+          "allowAgents": ["kimi"]
+        }
+      },
+      {
+        "id": "kimi",
+        "workspace": "${AGENT_WORKSPACE}/kimi",
+        "model": "nvidia-integrate/moonshotai/kimi-k2.5",
+        "memorySearch": {
+          "provider": "local",
+          "store": {
+            "path": "${AGENT_WORKSPACE}/kimi/.memory/kimi.sqlite"
+          }
+        },
+        "sandbox": {
+          // NOTE: OpenClaw sandboxing requires the `docker` CLI. If Docker isn't installed,
+          // sandboxed sessions will fail. Keep this off unless you have Docker available.
+          "mode": "off"
+        },
+        "tools": {
+          // Kimi can only use bash (exec-approvals restricts to curl + wget for Moltbook only).
+          "allow": ["bash"],
+          "deny": ["nodes", "gateway", "browser", "cron"],
+          "exec": {
+            // Run on gateway host so exec-approvals.json applies.
+            "host": "gateway",
+            "security": "allowlist"
+          }
+        }
+      },
+      {
+        "id": "claude",
+        "workspace": "${AGENT_WORKSPACE}/claude",
+        "model": {
+          "primary": "google-antigravity/claude-opus-4-5-thinking",
+          "fallbacks": ["google-antigravity/gemini-3-pro-high"]
+        }
+      }
+    ]
+  }
+}

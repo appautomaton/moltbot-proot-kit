@@ -1,0 +1,49 @@
+{
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "1password": { "enabled": false },
+      "apple-notes": { "enabled": false },
+      "apple-reminders": { "enabled": false },
+      "bird": { "enabled": false },
+      "blogwatcher": { "enabled": true },
+      "blucli": { "enabled": false },
+      "bluebubbles": { "enabled": false },
+      "camsnap": { "enabled": false },
+      "gemini": { "enabled": false },
+      "gifgrep": { "enabled": false },
+      "github": { "enabled": false },
+      "gog": { "enabled": true },
+      "goplaces": { "enabled": false },
+      "himalaya": { "enabled": false },
+      "imsg": { "enabled": false },
+      "local-places": { "enabled": false },
+      "model-usage": { "enabled": false },
+      "nano-banana-pro": { "enabled": false },
+      "nano-pdf": { "enabled": false },
+      "notion": { "enabled": false },
+      "obsidian": { "enabled": false },
+      "openai-image-gen": { "enabled": false },
+      "openai-whisper": { "enabled": false },
+      "openai-whisper-api": { "enabled": false },
+      "openhue": { "enabled": false },
+      "oracle": { "enabled": false },
+      "ordercli": { "enabled": false },
+      "peekaboo": { "enabled": false },
+      "sag": { "enabled": false },
+      "sherpa-onnx-tts": { "enabled": false },
+      "slack": { "enabled": false },
+      "songsee": { "enabled": false },
+      "sonoscli": { "enabled": false },
+      "spotify-player": { "enabled": false },
+      "summarize": { "enabled": false },
+      "things-mac": { "enabled": false },
+      "trello": { "enabled": false },
+      "video-frames": { "enabled": false },
+      "voice-call": { "enabled": false },
+      "wacli": { "enabled": false }
+    }
+  }
+}

@@ -16,7 +16,8 @@ This creates your actual config at `~/.openclaw/openclaw.json`.
 
 ```
 config/
-├── openclaw.json      # Reference config (DO NOT use directly)
+├── openclaw.json      # Modular config entrypoint (JSON5; supports $include)
+├── openclaw.d/        # Config fragments (JSON5)
 ├── .env              # Your secrets (gitignored, create from template)
 ├── .env.template     # Template showing required variables
 └── README.md         # This file
@@ -33,6 +34,8 @@ The wrapper script [`scripts/openclaw.mjs`](../scripts/openclaw.mjs) automatical
 ```
 
 OpenClaw reads `MY_API_KEY` from the environment at runtime — your secrets never touch the JSON file.
+
+This repo’s `config/openclaw.json` is **modular**: it uses OpenClaw’s JSON5 `$include` directive to merge files from `config/openclaw.d/` into one effective config.
 
 ## Customizing Your Setup
 
@@ -69,7 +72,8 @@ See `.env.template` for all available variables. Key ones:
 
 ## Important Notes
 
-- **`config/openclaw.json` is reference only** — Your actual config lives at `~/.openclaw/openclaw.json`
+- If `OPENCLAW_CONFIG_PATH=config/openclaw.json` is set in `config/.env`, OpenClaw will use this repo’s modular config directly.
+- If you copy the config to `~/.openclaw/openclaw.json`, also copy `config/openclaw.d/` alongside it (or update `$include` paths).
 - **Never commit `.env`** — It's gitignored for a reason
 - **Never hardcode secrets in JSON** — Always use `${VAR}` substitution
 

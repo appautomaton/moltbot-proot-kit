@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": { "enabled": true }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "exec": {
+      "host": "gateway",
+      "security": "full",
+      "ask": "off"
+    },
+    "agentToAgent": {
+      // Enable cross-agent session tools (sessions_send / sessions_history / sessions_list / session_status).
+      // Needed for main <-> kimi collaboration via those tools.
+      "enabled": true,
+      "allow": ["main", "kimi"]
+    },
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "perplexity",
+        "perplexity": {
+          "apiKey": "${PERPLEXITY_API_KEY}",
+          "baseUrl": "https://api.perplexity.ai/v2",
+          "model": "sonar-pro"
+        }
+      },
+      "fetch": {
+        "enabled": true
+      }
+    }
+  }
+}

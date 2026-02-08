@@ -2,6 +2,12 @@
 .env
 config/.env
 
+# Repo-local OpenClaw state (credentials, sessions, logs, etc.)
+bots/*
+
+# Repo-local agent workspaces (docs, skills, scratch files, etc.)
+workspace/
+
 # OS files
 .DS_Store
 Thumbs.db

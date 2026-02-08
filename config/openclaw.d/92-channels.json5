@@ -1,0 +1,14 @@
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial",
+      "actions": {
+        "sendMessage": true
+      }
+    }
+  }
+}

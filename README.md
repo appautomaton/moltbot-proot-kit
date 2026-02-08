@@ -76,6 +76,24 @@ See `docs/COMMANDS.md` for full reference.
 
 Copy `config/.env.template` to `config/.env` and fill in your values. The wrapper script (`scripts/openclaw.mjs`) automatically loads this file. Leave fields empty if you don't use that feature.
 
+Common overrides (optional):
+
+```bash
+# Keep agent workspaces under this repo (recommended; ignored by git)
+AGENT_WORKSPACE=workspace
+
+# Keep OpenClaw state under this repo (recommended; ignored by git)
+OPENCLAW_STATE_DIR=bots
+
+# Point OpenClaw at the repo config file
+OPENCLAW_CONFIG_PATH=config/openclaw.json
+
+# One-off example (override config path for a single command)
+OPENCLAW_CONFIG_PATH="bots/openclaw.json" pnpm openclaw models status
+```
+
+Relative paths are resolved relative to the repo root by `scripts/openclaw.mjs`, so you can run `pnpm openclaw ...` from any CWD.
+
 ## Browser Automation (proot/headless-friendly)
 
 If you want a stable "external browser service" (Xvfb + Chromium with CDP) for OpenClaw to attach to:
@@ -90,6 +108,6 @@ Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `~/.openclaw/brows
 
 ## Notes
 
-- **Profile**: This project uses the prod profile at `~/.openclaw/` by default (legacy `~/.clawdbot/` is still supported).
-- **`--dev` flag**: Only use if you need an isolated dev environment (`~/.openclaw-dev/`, port 19001). Must come before the subcommand: `pnpm openclaw --dev gateway`, not `pnpm openclaw gateway --dev`.
+- **Profile**: State is stored under `OPENCLAW_STATE_DIR` (default `~/.openclaw/`; legacy `~/.clawdbot/` is still supported).
+- **`--dev` flag**: For an isolated dev environment (`~/.openclaw-dev/`, port 19001). Recommended: `pnpm openclaw --dev gateway` (the wrapper also accepts `pnpm openclaw gateway --dev` and normalizes it).
 - **"node_modules missing" warning**: This is expected at the repo root. Ignore it or run commands with `pnpm --dir openclaw openclaw ...`.

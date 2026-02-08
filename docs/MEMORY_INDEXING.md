@@ -42,6 +42,27 @@ See: `openclaw/src/config/paths.ts` (`resolveStateDir`)
 
 ---
 
+## Context window and durable memory
+
+OpenClaw has two different concepts that are easy to mix up:
+
+- **Short-term context**: the current conversation and tool outputs inside the model context window.
+  - This is finite and will eventually be compacted (summarized/pruned) to stay within the model limits.
+  - Manual `/compact` requests help shrink context, but do not inherently write anything to disk.
+- **Durable memory**: files on disk in the agent workspace (Markdown).
+  - These are the sources the memory indexer reads and embeds.
+  - If you want something to survive compaction, write it to disk (for example `memory/YYYY-MM-DD.md` or `MEMORY.md`).
+
+How durable memory gets written:
+- Explicitly (you instruct the agent to write it, or you edit the file yourself).
+- Implicitly via the automatic pre-compaction memory flush turn (near auto-compaction only, not every message, and not guaranteed on manual `/compact`).
+  - See: `openclaw/src/auto-reply/reply/memory-flush.ts`
+
+Note: raw session transcripts (`*.jsonl`) are a separate store from durable memory files. They are useful
+for reconstruction/backfills, but are not treated as “memory sources” unless session indexing is enabled.
+
+---
+
 ## Where do `MEMORY.md` and `memory/*.md` come from?
 
 They live in the agent **workspace directory** (the “working folder” the agent can read/write).
@@ -221,7 +242,7 @@ state dir:   ~/.openclaw (default) OR ~/.clawdbot (legacy)
 config:      <STATE_DIR>/openclaw.json
 sqlite index <STATE_DIR>/memory/<agentId>.sqlite
 sessions:    <STATE_DIR>/agents/<agentId>/sessions/*.jsonl
-workspace:   ~/clawd-dev (or whatever config sets as agents.defaults.workspace)
+workspace:   ./workspace (or whatever config sets as agents.defaults.workspace)
 ```
 
 OpenClaw uses `~/.openclaw` by default. If it does not exist but a legacy `~/.clawdbot` directory does, it will use the legacy path instead.

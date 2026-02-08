@@ -41,7 +41,7 @@ In other words, the Gateway is both:
 ### 1) CLI (`openclaw` binary)
 - Source entrypoint: `openclaw/src/entry.ts`
 - The CLI is Commander-based with lazy-loaded subcommands. The important one here is `gateway`.
-- Wrapper repo provides scripts like `pnpm gateway:run:dev` that call into `openclaw`.
+- Wrapper repo exposes `pnpm openclaw ...` plus build helpers (`openclaw:install`, `openclaw:ui:build`, `openclaw:build`).
 
 ### 2) Gateway server (`openclaw gateway ...`)
 - Starts via: `openclaw/src/cli/gateway-cli/run.ts` → `startGatewayServer(...)`
@@ -105,16 +105,16 @@ HTTP request
 
 Practical implication:
 - If `openclaw/dist/control-ui/index.html` doesn't exist, the Gateway will respond with a
-  “Control UI assets not found” error and tell you to run `pnpm ui:build`.
+  “Control UI assets not found” error and tell you to build the UI (`pnpm openclaw:ui:build` from wrapper root).
 
 ## Profiles and State Directories (Why `--dev` matters)
 
 The CLI supports profiles (`--profile <name>`) and a shortcut `--dev`.
-These set where config/state lives (by default under your home directory):
+By default (without path overrides like `OPENCLAW_STATE_DIR` / `OPENCLAW_CONFIG_PATH`), these set where config/state lives:
 
 ```
 --profile default  → ~/.openclaw/
---dev              → ~/.openclaw/
+--dev              → ~/.openclaw-dev/
 ```
 
 Key env vars filled by profile logic:
@@ -123,10 +123,9 @@ Key env vars filled by profile logic:
   - default config filename is `openclaw.json` (legacy `clawdbot.json` is still supported)
 - `OPENCLAW_PROFILE`
 
-The wrapper repo’s default dev gateway run script uses:
-- `--dev` (so config/state is isolated)
-- `--bind loopback` (safer default)
-- `--port 19001`
+Recommended dev gateway command from wrapper root:
+- `pnpm openclaw --dev gateway`
+- default dev port is `19001`; bind mode follows config `gateway.bind` (fallback `loopback`)
 
 ## Common Commands (from `openclaw-platform/` root)
 
@@ -135,7 +134,7 @@ pnpm openclaw:install
 pnpm openclaw:ui:build
 pnpm openclaw:build
 
-OPENCLAW_GATEWAY_TOKEN=change-me pnpm gateway:run:dev
+OPENCLAW_GATEWAY_TOKEN=change-me pnpm openclaw --dev gateway
 ```
 
 ## Debugging “UI not showing”
@@ -143,7 +142,7 @@ OPENCLAW_GATEWAY_TOKEN=change-me pnpm gateway:run:dev
 Checklist:
 1) Does `openclaw/dist/control-ui/index.html` exist?
    - If not: run `pnpm openclaw:ui:build`
-2) Is the Gateway actually serving HTTP on the port you expect?
-   - wrapper defaults to `127.0.0.1:19001` in dev mode
+2) Is the Gateway actually serving HTTP on the port/bind you expect?
+   - with `pnpm openclaw --dev gateway`, default port is `19001`; bind mode comes from config (fallback `loopback`)
 3) If you’re behind a reverse proxy or on plain HTTP (not localhost), Control UI auth may require extra config:
    - `gateway.controlUi.allowInsecureAuth` (token-only fallback) and/or TLS/localhost secure context.

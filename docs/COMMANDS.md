@@ -29,11 +29,11 @@ pnpm openclaw gateway --port 18789   # Run on custom port
 pnpm openclaw gateway --force        # Kill existing listener and start
 ```
 
-Shortcut scripts (from project root):
+Dev profile commands (from project root):
 ```bash
-pnpm gateway:run:dev      # Gateway on loopback:19001 (dev profile)
-pnpm gateway:run:lan      # Gateway on 0.0.0.0:19001 (LAN access)
-pnpm gateway:status:dev   # Check dev gateway status
+pnpm openclaw --dev gateway                     # Run gateway in dev profile (default dev port 19001)
+pnpm openclaw --dev gateway --bind lan          # Expose dev gateway on LAN
+pnpm openclaw --dev gateway status              # Check dev gateway status
 ```
 
 ---
