@@ -7,9 +7,9 @@
     },
     "agentToAgent": {
       // Enable cross-agent session tools (sessions_send / sessions_history / sessions_list / session_status).
-      // Needed for main <-> kimi collaboration via those tools.
+      // Needed for main <-> kimi and main <-> writer collaboration via those tools.
       "enabled": true,
-      "allow": ["main", "kimi"]
+      "allow": ["main", "kimi", "writer"]
     },
     "web": {
       "search": {

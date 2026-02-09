@@ -1,10 +1,35 @@
 {
   "plugins": {
     "enabled": true,
+    "load": {
+      // Resolve via AGENT_WORKSPACE so plugin loading is stable even when runtime CWD is workspace/default.
+      "paths": ["${AGENT_WORKSPACE}/../plugins/exa-search"]
+    },
     "entries": {
       "telegram": { "enabled": true },
       "memory-core": { "enabled": true },
-      "google-antigravity-auth": { "enabled": true }
+      "google-antigravity-auth": { "enabled": true },
+      "exa-search": {
+        "enabled": true,
+        "config": {
+          "apiKey": "${EXA_API_KEY}",
+          "timeoutMs": 20000,
+          "retries": 3,
+          "retryBackoffMs": 400,
+          "retryJitterMs": 200,
+          "cacheTtlMs": 120000,
+          "cacheMaxEntries": 256,
+          "defaultType": "auto",
+          "defaultNumResults": 10,
+          "maxNumResults": 25,
+          "defaultText": true,
+          "defaultSummary": false,
+          "defaultHighlights": false,
+          "defaultModeration": false,
+          "defaultLivecrawl": "preferred",
+          "resultTextChars": 1400
+        }
+      }
     }
   }
 }

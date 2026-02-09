@@ -65,6 +65,7 @@ See `.env.template` for all available variables. Key ones:
 | `NVIDIA_INTEGRATE_API_KEY` | NVIDIA Integrate API for Kimi K2.5 |
 | `GEMINI_MEMORY_API_KEY` | Gemini API for memory search |
 | `PERPLEXITY_API_KEY` | Perplexity API for web search |
+| `EXA_API_KEY` | Exa API for `exa_search` plugin |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token from @BotFather |
 | `GATEWAY_AUTH_TOKEN` | Gateway authentication token |
 | `XDG_CONFIG_HOME` | GOG config directory (for Google OAuth) |

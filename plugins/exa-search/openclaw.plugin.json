@@ -1,0 +1,108 @@
+{
+  "id": "exa-search",
+  "name": "Exa Search",
+  "description": "High-availability Exa web search tool for agent runs.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "description": "Exa API key. Optional when EXA_API_KEY env var is set."
+      },
+      "baseUrl": {
+        "type": "string",
+        "description": "Exa API base URL.",
+        "default": "https://api.exa.ai"
+      },
+      "timeoutMs": {
+        "type": "integer",
+        "minimum": 1000,
+        "description": "Per-request timeout in milliseconds.",
+        "default": 20000
+      },
+      "retries": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 8,
+        "description": "Retry attempts for retryable failures (429/5xx/network).",
+        "default": 3
+      },
+      "retryBackoffMs": {
+        "type": "integer",
+        "minimum": 50,
+        "description": "Base exponential backoff in milliseconds.",
+        "default": 400
+      },
+      "retryJitterMs": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Additional random jitter added to retry backoff.",
+        "default": 200
+      },
+      "cacheTtlMs": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "In-memory cache TTL in milliseconds (0 disables cache).",
+        "default": 120000
+      },
+      "cacheMaxEntries": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Maximum in-memory cache entries (0 disables cache).",
+        "default": 256
+      },
+      "defaultType": {
+        "type": "string",
+        "enum": ["auto", "fast", "neural", "deep"],
+        "description": "Default Exa search type.",
+        "default": "auto"
+      },
+      "defaultNumResults": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "Default number of results returned by Exa.",
+        "default": 10
+      },
+      "maxNumResults": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "Hard cap for numResults accepted by the tool.",
+        "default": 25
+      },
+      "defaultText": {
+        "type": "boolean",
+        "description": "Request extracted page text by default.",
+        "default": true
+      },
+      "defaultSummary": {
+        "type": "boolean",
+        "description": "Request Exa summary by default.",
+        "default": false
+      },
+      "defaultHighlights": {
+        "type": "boolean",
+        "description": "Request Exa highlights by default.",
+        "default": false
+      },
+      "defaultModeration": {
+        "type": "boolean",
+        "description": "Enable Exa moderation by default.",
+        "default": false
+      },
+      "defaultLivecrawl": {
+        "type": "string",
+        "enum": ["never", "fallback", "preferred", "always"],
+        "description": "Default livecrawl mode for contents retrieval."
+      },
+      "resultTextChars": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Maximum characters of result text returned in tool output.",
+        "default": 1400
+      }
+    }
+  }
+}

@@ -10,13 +10,14 @@
         ]
       },
       "models": {
+        "openai-codex/gpt-5.3-codex": {},
         "openai-codex/gpt-5.2": {},
         "google-antigravity/claude-opus-4-5-thinking": {},
         "google-antigravity/claude-sonnet-4-5-thinking": {},
         "google-antigravity/gemini-3-pro-high": {},
         "google-antigravity/gemini-3-pro-low": {}
       },
-      "workspace": "${AGENT_WORKSPACE}/writer",
+      "workspace": "${AGENT_WORKSPACE}/default",
       "userTimezone": "America/New_York",
       "memorySearch": {
         "provider": "local",
@@ -49,9 +50,9 @@
         "id": "main",
         "default": true,
         "subagents": {
-          // Allow main agent to spawn subagents under the Kimi agent id.
+          // Allow main agent to spawn subagents under Kimi/Writer agent ids.
           // This keeps subagent auth + model selection isolated to that agent.
-          "allowAgents": ["kimi"]
+          "allowAgents": ["kimi", "writer"]
         }
       },
       {
@@ -81,11 +82,14 @@
         }
       },
       {
-        "id": "claude",
-        "workspace": "${AGENT_WORKSPACE}/claude",
+        "id": "writer",
+        "workspace": "${AGENT_WORKSPACE}/writer",
         "model": {
           "primary": "google-antigravity/claude-opus-4-5-thinking",
-          "fallbacks": ["google-antigravity/gemini-3-pro-high"]
+          "fallbacks": [
+            "openai-codex/gpt-5.3-codex",
+            "openai-codex/gpt-5.2"
+          ]
         }
       }
     ]
