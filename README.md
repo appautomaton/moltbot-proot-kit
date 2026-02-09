@@ -21,6 +21,7 @@ Monorepo-style **OpenClaw** workspace for local usage + development (git submodu
 
 - A predictable, repo-local OpenClaw setup: config + workspaces + state live together under this repo folder (instead of `~/.openclaw/`).
 - Modular JSON5 config you can edit/review in git (secrets stay in `config/.env`, never in JSON5).
+- Repo-local plugins (custom tools/skills) under `plugins/` that live outside the `openclaw/` submodule.
 - Optional Docker sandbox images for agents that need extra system dependencies (LibreOffice, OCR, etc.).
 
 ## Contents
@@ -50,11 +51,12 @@ git submodule update --init --recursive
 
 corepack enable
 pnpm openclaw:install
-pnpm openclaw:ui:build
 pnpm openclaw:build
+pnpm openclaw:ui:build
 
 cp config/.env.template config/.env
 # Edit config/.env (never commit it)
+# Optional: set EXA_API_KEY if you want the exa-search plugin/tool.
 
 pnpm openclaw models status   # verify config loads (fails fast if env vars missing)
 pnpm openclaw gateway
@@ -91,6 +93,7 @@ All paths below are relative to the repo root.
 - [`openclaw/`](openclaw/) — OpenClaw submodule (pnpm workspace; build output in `openclaw/dist/`)
 - [`scripts/`](scripts/) — wrapper entrypoint (see [`scripts/README.md`](scripts/README.md))
 - [`config/`](config/) — versioned config (commit-safe) + `config/.env.template`
+- [`plugins/`](plugins/) — repo-local OpenClaw plugins (custom tools/skills; see [`plugins/README.md`](plugins/README.md))
 - `bots/` — repo-local OpenClaw state dir (gitignored; see [`bots/README.md`](bots/README.md))
 - [`dockerfiles/`](dockerfiles/) — Docker build contexts for sandbox images (see [`dockerfiles/README.md`](dockerfiles/README.md))
 - [`docs/`](docs/) — extra docs for this repo
@@ -108,6 +111,9 @@ Architecture notes: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 ├─ scripts/
 │  ├─ openclaw.mjs               # loads config/.env, normalizes OPENCLAW_STATE_DIR, runs OpenClaw CLI
 │  └─ browser-service.sh         # optional helper for the browser sidecar
+├─ plugins/                      # repo-local OpenClaw plugins (custom tools/skills)
+│  ├─ README.md
+│  └─ exa-search/                 # example: Exa Search plugin (tool + skill pack)
 ├─ config/
 │  ├─ .env.template              # copy to config/.env (gitignored) and fill tokens/keys
 │  ├─ README.md                  # config wiring notes
@@ -127,6 +133,7 @@ Architecture notes: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - [`config/README.md`](config/README.md) — how config/env/state are wired
 - [`docs/COMMANDS.md`](docs/COMMANDS.md) — command reference for this repo wrapper
 - [`docs/proot-setup.md`](docs/proot-setup.md) — Termux + proot-distro setup notes (see `proot-debian` branch)
+- `pnpm docs:check` — validates onboarding docs against executable repo truth
 
 ## Common commands
 
@@ -136,6 +143,7 @@ pnpm openclaw agents list --bindings
 pnpm openclaw channels status --probe
 pnpm openclaw hooks list
 pnpm openclaw nodes status
+pnpm docs:check
 ```
 
 ## Sandboxed agents (Docker)

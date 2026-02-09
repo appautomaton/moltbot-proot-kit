@@ -13,6 +13,7 @@ Start with this file. If you need more detail, prefer these docs instead of gues
 - Config wiring + rules: `config/README.md`
 - Repo-local state + migration notes: `bots/README.md`
 - Sandbox images: `dockerfiles/README.md`
+- Repo-local plugins (custom tools/skills): `plugins/README.md`
 - Command reference: `docs/COMMANDS.md`
 - Architecture notes: `ARCHITECTURE.md`
 
@@ -34,6 +35,7 @@ Start with this file. If you need more detail, prefer these docs instead of gues
   - runs the OpenClaw CLI via `pnpm --dir openclaw openclaw ...`
 - `config/.env.template` — template for local secrets
 - `config/openclaw/` — **commit-safe** modular JSON5 config (root: `config/openclaw/openclaw.json5`)
+- `plugins/` — repo-local OpenClaw plugins (custom tools/skills; loaded via `config/openclaw/plugins.json5`)
 - `bots/` — **repo-local OpenClaw state dir** (sessions/logs/credentials/workspaces/etc; mostly gitignored)
   - Active config entrypoint (when `OPENCLAW_STATE_DIR=bots`): `bots/openclaw.json` (thin `$include`)
   - Workspaces: `bots/workspaces/<agent>/...`
@@ -46,7 +48,9 @@ Architecture notes: `ARCHITECTURE.md`
 
 - If `pnpm` is missing: `corepack enable`
 - Default entrypoint (always from repo root): `pnpm openclaw <command>`
+- Root-script source of truth: `package.json` (this repo intentionally keeps a small script surface)
 - Quick “does config load?” check: `pnpm openclaw models status`
+- Docs consistency check: `pnpm docs:check`
 - Full command list: `docs/COMMANDS.md`
 
 ## Environment + config wiring

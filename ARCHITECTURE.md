@@ -41,7 +41,7 @@ In other words, the Gateway is both:
 ### 1) CLI (`openclaw` binary)
 - Source entrypoint: `openclaw/src/entry.ts`
 - The CLI is Commander-based with lazy-loaded subcommands. The important one here is `gateway`.
-- Wrapper repo provides scripts like `pnpm gateway:run:dev` that call into `openclaw`.
+- This wrapper repo runs the CLI through `scripts/openclaw.mjs` via `pnpm openclaw ...`.
 
 ### 2) Gateway server (`openclaw gateway ...`)
 - Starts via: `openclaw/src/cli/gateway-cli/run.ts` → `startGatewayServer(...)`
@@ -63,13 +63,12 @@ In other words, the Gateway is both:
 
 ## Build Pipeline (How `dist/` Is Produced)
 
-### A) Backend TypeScript → `openclaw/dist/`
+### A) Backend build output → `openclaw/dist/`
 
 ```
 pnpm --dir openclaw build
-└─ tsc -p tsconfig.json
-   └─ emits JS into openclaw/dist/** mirroring openclaw/src/**
-      (rootDir=src, outDir=dist)
+└─ tsdown + copy/generate steps
+   └─ emits runtime JS bundles and generated artifacts into openclaw/dist/**
 ```
 
 OpenClaw’s build also runs a few “copy/generate” steps that write into `dist/`:
@@ -105,16 +104,16 @@ HTTP request
 
 Practical implication:
 - If `openclaw/dist/control-ui/index.html` doesn't exist, the Gateway will respond with a
-  “Control UI assets not found” error and tell you to run `pnpm ui:build`.
+  “Control UI assets not found” error and tell you to run `pnpm openclaw:ui:build`.
 
-## Profiles and State Directories (Why `--dev` matters)
+## Profiles and State Directories
 
 The CLI supports profiles (`--profile <name>`) and a shortcut `--dev`.
 These set where config/state lives (by default under your home directory):
 
 ```
 --profile default  → ~/.openclaw/
---dev              → ~/.openclaw/
+--dev              → ~/.openclaw-dev/
 ```
 
 Key env vars filled by profile logic:
@@ -123,10 +122,9 @@ Key env vars filled by profile logic:
   - default config filename is `openclaw.json` (legacy `clawdbot.json` is still supported)
 - `OPENCLAW_PROFILE`
 
-The wrapper repo’s default dev gateway run script uses:
-- `--dev` (so config/state is isolated)
-- `--bind loopback` (safer default)
-- `--port 19001`
+This wrapper repo usually overrides home-profile defaults by setting
+`OPENCLAW_STATE_DIR=bots` in `config/.env` and routing config through `bots/openclaw.json`.
+Treat the home-profile mapping above as upstream CLI context.
 
 ## Common Commands (from `openclaw-platform/` root)
 
@@ -135,7 +133,9 @@ pnpm openclaw:install
 pnpm openclaw:ui:build
 pnpm openclaw:build
 
-OPENCLAW_GATEWAY_TOKEN=change-me pnpm gateway:run:dev
+pnpm openclaw models status
+pnpm openclaw gateway
+pnpm openclaw --dev gateway
 ```
 
 ## Debugging “UI not showing”
@@ -144,6 +144,7 @@ Checklist:
 1) Does `openclaw/dist/control-ui/index.html` exist?
    - If not: run `pnpm openclaw:ui:build`
 2) Is the Gateway actually serving HTTP on the port you expect?
-   - wrapper defaults to `127.0.0.1:19001` in dev mode
+   - `pnpm openclaw gateway` uses repo config defaults (`config/openclaw/gateway.json5`, currently loopback:18789)
+   - `pnpm openclaw --dev gateway` uses dev profile defaults (currently loopback:19001)
 3) If you’re behind a reverse proxy or on plain HTTP (not localhost), Control UI auth may require extra config:
    - `gateway.controlUi.allowInsecureAuth` (token-only fallback) and/or TLS/localhost secure context.

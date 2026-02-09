@@ -1,0 +1,18 @@
+{
+  "id": "exa-search",
+  "name": "Exa Search",
+  "description": "Exa Search API tool + skill pack (high-signal web retrieval).",
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "apiKeyEnv": {
+        "type": "string",
+        "description": "Environment variable name that holds the Exa API key.",
+        "default": "EXA_API_KEY"
+      }
+    }
+  }
+}
+

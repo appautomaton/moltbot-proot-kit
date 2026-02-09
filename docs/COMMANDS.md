@@ -1,146 +1,85 @@
-# OpenClaw Commands Reference
+# OpenClaw Commands Reference (Repo Wrapper)
 
-This project uses a local pnpm build. All commands are run via:
+This repo runs OpenClaw through the wrapper in `scripts/openclaw.mjs`.
 
-```bash
-pnpm openclaw <command> <subcommand> [options]
-```
-
-Run from either `openclaw-platform/` or `openclaw/`. Uses prod profile at `~/.openclaw/` (legacy `~/.clawdbot/` is still supported).
-
----
-
-## Build & Install
+## Canonical entrypoint (repo root)
 
 ```bash
-pnpm openclaw:install      # Install dependencies
-pnpm openclaw:ui:build     # Build the UI
-pnpm openclaw:build        # Build the CLI
+pnpm openclaw <command> [subcommand] [options]
 ```
 
----
+Run commands from the repo root (the directory with this repo's `package.json`).
 
-## Gateway
+## Wrapper scripts in this repo (authoritative)
 
 ```bash
-pnpm openclaw gateway                # Run the gateway
-pnpm openclaw gateway status         # Check gateway status
-pnpm openclaw gateway --port 18789   # Run on custom port
-pnpm openclaw gateway --force        # Kill existing listener and start
+pnpm openclaw:install      # Install dependencies in openclaw/
+pnpm openclaw:ui:build     # Build Control UI into openclaw/dist/control-ui
+pnpm openclaw:build        # Build CLI/backend into openclaw/dist
+pnpm docs:check            # Validate onboarding docs against repo truth
 ```
 
-Shortcut scripts (from project root):
-```bash
-pnpm gateway:run:dev      # Gateway on loopback:19001 (dev profile)
-pnpm gateway:run:lan      # Gateway on 0.0.0.0:19001 (LAN access)
-pnpm gateway:status:dev   # Check dev gateway status
-```
-
----
-
-## Memory
+In non-interactive shells, use:
 
 ```bash
-pnpm openclaw memory status    # Show memory search index status
-pnpm openclaw memory index     # Reindex memory files
-pnpm openclaw memory search    # Search memory files
+CI=true pnpm openclaw:install
 ```
 
----
+## Core CLI commands (via wrapper)
 
-## Messaging
+```bash
+pnpm openclaw --help
+pnpm openclaw <command> --help
+
+pnpm openclaw models status
+pnpm openclaw gateway
+pnpm openclaw gateway status
+pnpm openclaw gateway stop
+pnpm openclaw gateway --port 18789
+pnpm openclaw gateway --force
+
+pnpm openclaw agents list --bindings
+pnpm openclaw channels status --probe
+pnpm openclaw hooks list
+pnpm openclaw nodes status
+pnpm openclaw status
+pnpm openclaw health
+pnpm openclaw logs
+```
+
+## Messaging and channel examples
 
 ```bash
 pnpm openclaw message send --target +15555550123 --message "Hi"
 pnpm openclaw message send --channel telegram --target @mychat --message "Hi"
+pnpm openclaw channels login --verbose
+pnpm openclaw sessions
 ```
 
----
-
-## Agent
+## Setup and configuration helpers
 
 ```bash
-pnpm openclaw agent --to +15555550123 --message "Run summary"
-pnpm openclaw agent --to +15555550123 --message "Run summary" --deliver
-pnpm openclaw agents         # Manage isolated agents
-```
-
----
-
-## Channels & Sessions
-
-```bash
-pnpm openclaw channels                   # Channel management
-pnpm openclaw channels login --verbose   # Link WhatsApp Web (show QR)
-pnpm openclaw sessions                   # List conversation sessions
-```
-
----
-
-## Skills
-
-```bash
-pnpm openclaw skills         # Skills management
-```
-
----
-
-## Health & Diagnostics
-
-```bash
-pnpm openclaw health         # Fetch health from running gateway
-pnpm openclaw status         # Show channel health and recent sessions
-pnpm openclaw doctor         # Health checks + quick fixes
-pnpm openclaw logs           # Gateway logs
-```
-
----
-
-## Setup & Configuration
-
-```bash
-pnpm openclaw setup                              # Initialize config and workspace
+pnpm openclaw setup
 pnpm openclaw setup --mode local --non-interactive
-pnpm openclaw onboard                            # Interactive setup wizard
-pnpm openclaw configure                          # Set up credentials/devices
-pnpm openclaw config                             # Config helpers (get/set/unset)
+pnpm openclaw onboard
+pnpm openclaw configure
+pnpm openclaw config
 ```
 
----
+## State and profile notes (important)
 
-## Browser
+For this wrapper repo, the default workflow is repo-local state:
 
-```bash
-pnpm openclaw browser        # Manage dedicated browser (Chrome/Chromium)
-```
+- `OPENCLAW_STATE_DIR=bots` (typically set in `config/.env`)
+- Active config entrypoint: `bots/openclaw.json`
+- Modular config root: `config/openclaw/openclaw.json5`
 
----
+Upstream OpenClaw profile behavior (context only):
 
-## Other Utilities
+- Default profile (if state dir is not overridden): `~/.openclaw/`
+- `--dev`: `~/.openclaw-dev/`
+- `--profile <name>`: `~/.openclaw-<name>/`
 
-```bash
-pnpm openclaw dashboard      # Open Control UI
-pnpm openclaw tui            # Terminal UI
-pnpm openclaw plugins        # Plugin management
-pnpm openclaw webhooks       # Webhook helpers
-pnpm openclaw cron           # Cron scheduler
-```
-
----
-
-## Help
-
-```bash
-pnpm openclaw --help             # Show all commands
-pnpm openclaw <command> --help   # Show help for specific command
-```
-
----
-
-## Notes
-
-- **Prod profile**: `~/.openclaw/` (default; legacy `~/.clawdbot/` supported)
-- **Dev profile**: `~/.openclaw-dev/` (use `--dev` flag)
-- **Custom profile**: `--profile <name>` uses `~/.openclaw-<name>/`
+Do not assume home-directory profiles for this repo unless you intentionally override `OPENCLAW_STATE_DIR`.
 
 Docs: https://docs.openclaw.ai/cli

@@ -28,7 +28,8 @@
       "group:sessions",
       "memory_search",
       "memory_get",
-      "group:web"
+      "group:web",
+      "exa-search"
     ],
     "deny": [
       "browser",
@@ -50,7 +51,8 @@
           "group:sessions",
           "memory_search",
           "memory_get",
-          "group:web"
+          "group:web",
+          "exa-search"
         ]
       }
     }

@@ -1,11 +1,23 @@
 {
   "enabled": true,
+  "load": {
+    "paths": [
+      "${OPENCLAW_STATE_DIR}/../plugins"
+    ]
+  },
   "allow": [
     "telegram",
     "memory-core",
-    "google-antigravity-auth"
+    "google-antigravity-auth",
+    "exa-search"
   ],
   "entries": {
+    "exa-search": {
+      "enabled": true,
+      "config": {
+        "apiKeyEnv": "EXA_API_KEY"
+      }
+    },
     "google-antigravity-auth": {
       "enabled": true
     },

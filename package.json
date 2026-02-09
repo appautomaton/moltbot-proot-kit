@@ -1,11 +1,12 @@
 {
   "name": "openclaw-platform",
   "private": true,
-  "packageManager": "pnpm@10.23.0",
+  "packageManager": "pnpm@10.29.1+sha512.48dae233635a645768a3028d19545cacc1688639eeb1f3734e42d6d6b971afbf22aa1ac9af52a173d9c3a20c15857cfa400f19994d79a2f626fcc73fccda9bbc",
   "scripts": {
     "openclaw": "node scripts/openclaw.mjs",
     "openclaw:install": "pnpm --dir openclaw install",
     "openclaw:build": "pnpm --dir openclaw build",
-    "openclaw:ui:build": "pnpm --dir openclaw ui:build"
+    "openclaw:ui:build": "pnpm --dir openclaw ui:build",
+    "docs:check": "node scripts/check-docs-consistency.mjs"
   }
 }

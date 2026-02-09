@@ -16,6 +16,7 @@
     "profile": "full",
     "allow": [
       "group:web",
+      "exa-search",
       "group:fs",
       "group:runtime",
       "group:sessions",

@@ -23,6 +23,7 @@
 - 你不用再去找 `~/.openclaw/`：这个仓库把 OpenClaw 的“状态目录/工作区/配置入口”统一放到 `bots/` 下面。
 - 配置是拆开的 JSON5：你可以按模块改，比如 `agents/`、`channels/`、`tools/`，不会挤在一个巨大 JSON 里。
 - `config/.env` 专门放密钥：配置文件里只引用 `${ENV_VAR}`，避免 secrets 混进 git。
+- repo 内也支持放自定义 plugins（工具/技能包），统一放在 `plugins/`，不改 `openclaw/` submodule。
 
 ## 目录
 
@@ -51,11 +52,12 @@ git submodule update --init --recursive
 
 corepack enable
 pnpm openclaw:install
-pnpm openclaw:ui:build
 pnpm openclaw:build
+pnpm openclaw:ui:build
 
 cp config/.env.template config/.env
 # 编辑 config/.env（不要提交）
+# 可选：如果要用 exa-search 插件/工具，请在 config/.env 里填 EXA_API_KEY
 
 pnpm openclaw models status   # 先验证配置能加载（缺 env var 会直接报）
 pnpm openclaw gateway
@@ -92,6 +94,7 @@ flowchart TD
 - [`openclaw/`](openclaw/) — OpenClaw submodule（pnpm workspace；build 输出在 `openclaw/dist/`）
 - [`scripts/`](scripts/) — wrapper/辅助脚本（见 [`scripts/README.md`](scripts/README.md)）
 - [`config/`](config/) — 可提交的配置（JSON5 拆分）+ `config/.env.template`
+- [`plugins/`](plugins/) — repo-local plugins（自定义工具/skills；见 [`plugins/README.md`](plugins/README.md)）
 - `bots/` — repo-local state/workspaces（敏感；默认 gitignored；见 [`bots/README.md`](bots/README.md)）
 - [`dockerfiles/`](dockerfiles/) — sandbox 镜像构建上下文（见 [`dockerfiles/README.md`](dockerfiles/README.md)）
 - [`docs/`](docs/) — 本 repo 的额外文档
@@ -110,6 +113,9 @@ flowchart TD
 ├─ scripts/
 │  ├─ openclaw.mjs               # loads config/.env, normalizes OPENCLAW_STATE_DIR, runs OpenClaw CLI
 │  └─ browser-service.sh         # optional helper for the browser sidecar
+├─ plugins/                      # repo-local OpenClaw plugins（自定义工具/skills）
+│  ├─ README.md
+│  └─ exa-search/                 # 示例：Exa Search 插件（tool + skill pack）
 ├─ config/
 │  ├─ .env.template              # copy to config/.env (gitignored) and fill tokens/keys
 │  ├─ README.md                  # config wiring notes
@@ -129,6 +135,7 @@ flowchart TD
 - [`config/README.md`](config/README.md) — config/env/state 的连接方式
 - [`docs/COMMANDS.md`](docs/COMMANDS.md) — 本 repo wrapper 的命令参考
 - [`docs/proot-setup.md`](docs/proot-setup.md) — Termux + proot 说明（见 `proot-debian` 分支）
+- `pnpm docs:check` — 校验 onboarding 文档是否和当前 repo 可执行事实一致
 
 ## 常用命令
 
@@ -138,6 +145,7 @@ pnpm openclaw agents list --bindings
 pnpm openclaw channels status --probe
 pnpm openclaw hooks list
 pnpm openclaw nodes status
+pnpm docs:check
 ```
 
 ## 沙盒 Agents（Docker）
