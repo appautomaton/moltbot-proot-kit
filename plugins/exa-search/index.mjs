@@ -32,7 +32,7 @@ function resolveApiKey(api) {
   const apiKey = (process.env[envName] ?? "").trim();
   if (!apiKey) {
     throw new Error(
-      `Missing Exa API key. Set ${envName} in your environment (this repo: config/.env), then restart the gateway.`,
+      `Missing Exa API key in process env (${envName}). Ask the user to configure host env (this repo: config/.env) and restart gateway; do not attempt file or process changes automatically.`,
     );
   }
   return { apiKey, envName };
@@ -302,4 +302,3 @@ function createExaSearchTool(api) {
 export default function register(api) {
   api.registerTool(() => createExaSearchTool(api));
 }
-

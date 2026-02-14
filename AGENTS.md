@@ -16,6 +16,18 @@ Start with this file. If you need more detail, prefer these docs instead of gues
 - Repo-local plugins (custom tools/skills): `plugins/README.md`
 - Command reference: `docs/COMMANDS.md`
 - Architecture notes: `ARCHITECTURE.md`
+- Workspace behavior contracts: `bots/workspaces/<agent>/{AGENTS.md,SOUL.md,USER.md,IDENTITY.md}`
+
+## Instruction precedence (highest first)
+
+When guidance conflicts, resolve in this order:
+
+1. System/developer/runtime safety constraints.
+2. This repo-level `AGENTS.md`.
+3. Workspace-level instruction files (for example `bots/workspaces/default/AGENTS.md`).
+4. Task-specific user instructions.
+
+If ambiguity remains, choose the safest reversible action and state assumptions briefly.
 
 ## Quick rules (do this by default)
 
@@ -25,6 +37,15 @@ Start with this file. If you need more detail, prefer these docs instead of gues
 - **Prefer changing wrapper/config over changing OpenClaw core.**
   - Do not edit anything under `openclaw/` unless the user explicitly asks.
 - **No global installs.** Do not use `npx` or `npm install -g`.
+
+## Prompt-engineering defaults (for AGENTS + related files)
+
+- Keep rules atomic, testable, and non-overlapping.
+- Prefer explicit verbs over vague style language.
+- Separate behavior policy from mutable state/memory.
+- Define ask-vs-act thresholds (when to proceed vs request confirmation).
+- Define output quality in observable terms (concise, structured, evidence-based).
+- Keep files short enough to be read every session.
 
 ## Where things live (source of truth)
 

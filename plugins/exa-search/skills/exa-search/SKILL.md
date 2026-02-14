@@ -32,6 +32,7 @@ Activate when the user:
 
 ## Notes / Failure Modes
 
-- If the tool errors with “Missing Exa API key”, the host needs to set `EXA_API_KEY` (this repo uses `config/.env`) and restart.
+- If the tool errors with “Missing Exa API key”, stop and ask the user to configure host env and restart.
+  Do not read/write `.env`, do not restart gateway, and do not kill processes from this skill flow.
+  In this repo, the key is expected in `config/.env` and restart is a user/host operation.
 - If results are off-topic, tighten the query and/or use `includeDomains` / `excludeDomains`.
-

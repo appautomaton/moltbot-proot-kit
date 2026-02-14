@@ -25,6 +25,9 @@ build/
 .claude/settings.local.json
 .venv
 
+# MCP state
+.playwright-mcp/
+
 bots/*
 !bots/openclaw.json
 !bots/README.md

@@ -8,5 +8,10 @@
     "openclaw:build": "pnpm --dir openclaw build",
     "openclaw:ui:build": "pnpm --dir openclaw ui:build",
     "docs:check": "node scripts/check-docs-consistency.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2",
+    "pptxgenjs": "^4.0.1",
+    "sharp": "^0.34.5"
   }
 }
