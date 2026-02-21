@@ -19,6 +19,41 @@
             },
             "contextWindow": 200000,
             "maxTokens": 16384
+          },
+          {
+            "id": "qwen/qwen3.5-397b-a17b",
+            "name": "Qwen3.5-397B-A17B (NVIDIA Integrate)",
+            "reasoning": true,
+            "input": ["text"],
+            "compat": {
+              "thinkingFormat": "qwen",
+              "supportsDeveloperRole": false
+            },
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 262144,
+            "maxTokens": 81920
+          },
+          {
+            "id": "z-ai/glm5",
+            "name": "GLM-5 (NVIDIA Integrate)",
+            "reasoning": true,
+            "input": ["text"],
+            "compat": {
+              "thinkingFormat": "zai"
+            },
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 204800,
+            "maxTokens": 131072
           }
         ]
       }

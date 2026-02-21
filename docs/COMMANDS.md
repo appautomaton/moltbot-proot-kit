@@ -29,6 +29,8 @@ pnpm openclaw gateway --port 18789   # Run on custom port
 pnpm openclaw gateway --force        # Kill existing listener and start
 ```
 
+When started through this repo wrapper, `pnpm openclaw gateway` also watches `openclaw.d/*.json5` next to the active config and touches the root config file to trigger reload via OpenClaw's existing watcher. Set `OPENCLAW_INCLUDE_TOUCH_BRIDGE=0` to disable this behavior.
+
 Dev profile commands (from project root):
 ```bash
 pnpm openclaw --dev gateway                     # Run gateway in dev profile (default dev port 19001)

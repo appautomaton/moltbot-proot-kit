@@ -15,7 +15,10 @@
         "google-antigravity/claude-opus-4-5-thinking": {},
         "google-antigravity/claude-sonnet-4-5-thinking": {},
         "google-antigravity/gemini-3-pro-high": {},
-        "google-antigravity/gemini-3-pro-low": {}
+        "google-antigravity/gemini-3-pro-low": {},
+        "nvidia-integrate/moonshotai/kimi-k2.5": {},
+        "nvidia-integrate/qwen/qwen3.5-397b-a17b": {},
+        "nvidia-integrate/z-ai/glm5": {}
       },
       "workspace": "${AGENT_WORKSPACE}/default",
       "userTimezone": "America/New_York",

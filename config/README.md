@@ -37,6 +37,8 @@ OpenClaw reads `MY_API_KEY` from the environment at runtime — your secrets nev
 
 This repo’s `config/openclaw.json` is **modular**: it uses OpenClaw’s JSON5 `$include` directive to merge files from `config/openclaw.d/` into one effective config.
 
+When you run `pnpm openclaw gateway` from this repo, the wrapper also starts a small bridge for modular configs: it watches `openclaw.d/*.json5` next to the active config and "touches" the root `openclaw.json` so the gateway's existing reload path is triggered.
+
 ## Customizing Your Setup
 
 1. **Run the initial setup first** (if you haven't):
@@ -75,6 +77,7 @@ See `.env.template` for all available variables. Key ones:
 
 - If `OPENCLAW_CONFIG_PATH=config/openclaw.json` is set in `config/.env`, OpenClaw will use this repo’s modular config directly.
 - If you copy the config to `~/.openclaw/openclaw.json`, also copy `config/openclaw.d/` alongside it (or update `$include` paths).
+- Set `OPENCLAW_INCLUDE_TOUCH_BRIDGE=0` to disable the wrapper's fragment-watch bridge.
 - **Never commit `.env`** — It's gitignored for a reason
 - **Never hardcode secrets in JSON** — Always use `${VAR}` substitution
 
