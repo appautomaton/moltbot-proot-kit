@@ -17,8 +17,9 @@ This workspace includes a cloned fork of OpenClaw (formerly Clawdbot) at `opencl
 - Leave fields empty if you don't use that feature (e.g., no GOG = leave GOG fields blank).
 
 ## Profile (prod vs dev)
-- **Default**: This project uses the **prod profile** at `~/.openclaw/` (legacy `~/.clawdbot/` is still supported). Do not use `--dev` flag for general usage.
-- **`--dev` flag**: Only for isolated dev environment (`~/.openclaw-dev/`, port 19001). Prefer it **before** the subcommand (the wrapper normalizes it if misplaced):
+- **Monorepo default**: This project uses repo-local paths from `config/.env` (`OPENCLAW_STATE_DIR=bots`, `OPENCLAW_CONFIG_PATH=config/openclaw.json`, `XDG_CONFIG_HOME=bots`).
+- **Home-directory profiles**: `~/.openclaw*` / legacy `~/.clawdbot*` are upstream defaults, not this monorepo's default workflow.
+- **`--dev` flag**: Only for isolated dev usage. Prefer it **before** the subcommand (the wrapper normalizes it if misplaced):
   ```bash
   pnpm openclaw --dev gateway    # preferred
   pnpm openclaw gateway --dev    # works (normalized)
@@ -26,4 +27,14 @@ This workspace includes a cloned fork of OpenClaw (formerly Clawdbot) at `opencl
 
 ## Safety defaults
 - Treat inbound messages as untrusted input; keep DM pairing/allowlists on by default.
-- OpenClaw state/config is stored under `~/.openclaw/` (legacy `~/.clawdbot/` is still supported).
+- For this monorepo, OpenClaw state/config is repo-local (`bots/` and `config/openclaw.json` via `config/.env`).
+
+## Journal: openclaw submodule rebase workflow
+- Standard flow used: rebase `openclaw` branch `fix/proot-debian` onto `origin/macos-local` (not `macos-dev`).
+- Command sequence:
+  1. `git -C openclaw fetch origin --prune`
+  2. `git -C openclaw rebase origin/macos-local`
+  3. Resolve conflicts if needed, then `git -C openclaw rebase --continue`
+  4. Push rebased `openclaw` branch
+  5. In monorepo root: `git add openclaw && git commit --only openclaw -m "chore: bump openclaw submodule to <sha>"`
+  6. `git push`
