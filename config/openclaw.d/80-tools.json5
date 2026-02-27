@@ -24,6 +24,35 @@
       "fetch": {
         "enabled": true
       }
+    },
+    "media": {
+      "audio": {
+        "enabled": true,
+        "scope": {
+          // Restrict audio transcription to default/main and writer agent sessions.
+          "default": "deny",
+          "rules": [
+            { "action": "allow", "match": { "keyPrefix": "agent:main:" } },
+            { "action": "allow", "match": { "keyPrefix": "agent:writer:" } }
+          ]
+        },
+        "models": [
+          {
+            "type": "cli",
+            "command": "/home/dev/ai/moonshine-asr/.venv/bin/python",
+            "args": [
+              "/home/dev/agents/openclaw-platform/scripts/moonshine_transcribe.py",
+              "--audio",
+              "{{MediaPath}}",
+              "--model-path",
+              "/home/dev/ai/moonshine-asr/models/download.moonshine.ai/model/small-streaming-en/quantized",
+              "--model-arch",
+              "4"
+            ],
+            "timeoutSeconds": 90
+          }
+        ]
+      }
     }
   }
 }

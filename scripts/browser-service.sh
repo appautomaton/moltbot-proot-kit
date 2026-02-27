@@ -10,7 +10,7 @@ port="${BROWSER_CDP_PORT:-18800}"
 
 # OpenClaw state lives under ~/.openclaw
 profile="${BROWSER_PROFILE:-clawd}"
-user_data_dir="${BROWSER_USER_DATA_DIR:-$HOME/.openclaw/browser/${profile}/user-data}"
+user_data_dir="${BROWSER_USER_DATA_DIR:-$(dirname "$(dirname "$0")")/bots/browser/openclaw/user-data}"
 state_dir="${BROWSER_STATE_DIR:-$HOME/.openclaw/browser/service/${profile}}"
 
 xvfb_pid_file="${state_dir}/xvfb.pid"
@@ -26,6 +26,12 @@ find_chrome_bin() {
     return 0
   fi
 
+  local preferred="${HOME}/.cache/ms-playwright/chromium-1212/chrome-linux/chrome"
+  if [[ -x "${preferred}" ]]; then
+    echo "${preferred}"
+    return 0
+  fi
+
   local candidates
   candidates="$(ls -1d "${HOME}/.cache/ms-playwright/chromium-"*/chrome-linux/chrome 2>/dev/null || true)"
   if [[ -z "${candidates}" ]]; then
@@ -33,7 +39,7 @@ find_chrome_bin() {
     return 1
   fi
 
-  # Prefer the highest version directory (e.g. chromium-1208 vs chromium-1195).
+  # Fallback: prefer the highest version directory.
   echo "${candidates}" | tr ' ' '\n' | sort -V | tail -n 1
 }
 
@@ -63,7 +69,7 @@ Environment overrides (optional):
   BROWSER_XVFB_SCREEN    Xvfb screen, e.g. 1280x720x24
   BROWSER_CDP_PORT       CDP remote debugging port (default: 18800)
   BROWSER_PROFILE        Profile name used in ~/.openclaw/browser/<profile>/user-data (default: clawd)
-  BROWSER_USER_DATA_DIR  Override user-data-dir (default: ~/.openclaw/browser/<profile>/user-data)
+  BROWSER_USER_DATA_DIR  Override user-data-dir (default: <repo>/bots/browser/openclaw/user-data)
   BROWSER_STATE_DIR      Where to store pid/log files (default: ~/.openclaw/browser/service/<profile>)
 
 Notes:

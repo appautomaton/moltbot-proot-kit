@@ -4,11 +4,30 @@
       "enabled": true,
       "dmPolicy": "pairing",
       "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "accounts": {
+        "default": {
+          "name": "Default bot"
+        },
+        "writer": {
+          "name": "Writer bot",
+          "botToken": "${TELEGRAM_BOT_TOKEN_WRITER}",
+          "dmPolicy": "pairing"
+        }
+      },
       "groupPolicy": "allowlist",
       "streamMode": "partial",
       "actions": {
         "sendMessage": true
       }
     }
-  }
+  },
+  "bindings": [
+    {
+      "match": {
+        "channel": "telegram",
+        "accountId": "writer"
+      },
+      "agentId": "writer"
+    }
+  ]
 }

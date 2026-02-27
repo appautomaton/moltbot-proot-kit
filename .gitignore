@@ -29,3 +29,6 @@ build/
 
 # Local Claude Code settings (keep settings.json, ignore local overrides)
 .claude/settings.local.json
+
+# Playwright MCP local artifacts
+.playwright-mcp/

@@ -4,10 +4,6 @@
       "Bash(ls:*)",
       "Bash(wc:*)"
     ],
-    "deny": [
-      "Read(.env)",
-      "Read(**/.env)",
-      "Read(config/.env)"
-    ]
+    "deny": []
   }
 }

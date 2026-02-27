@@ -8,7 +8,6 @@
     "entries": {
       "telegram": { "enabled": true },
       "memory-core": { "enabled": true },
-      "google-antigravity-auth": { "enabled": true },
       "exa-search": {
         "enabled": true,
         "config": {

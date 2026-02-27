@@ -2,20 +2,16 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openai-codex/gpt-5.2",
+        "primary": "openai-codex/gpt-5.3-codex",
         "fallbacks": [
-          "google-antigravity/claude-opus-4-5-thinking",
-          "google-antigravity/claude-sonnet-4-5-thinking",
-          "google-antigravity/gemini-3-pro-high"
+          "openai-codex/gpt-5.2"
         ]
       },
       "models": {
         "openai-codex/gpt-5.3-codex": {},
         "openai-codex/gpt-5.2": {},
-        "google-antigravity/claude-opus-4-5-thinking": {},
-        "google-antigravity/claude-sonnet-4-5-thinking": {},
-        "google-antigravity/gemini-3-pro-high": {},
-        "google-antigravity/gemini-3-pro-low": {},
+        "anthropic/claude-sonnet-4-6": {},
+        "anthropic/claude-opus-4-6": {},
         "nvidia-integrate/moonshotai/kimi-k2.5": {},
         "nvidia-integrate/qwen/qwen3.5-397b-a17b": {},
         "nvidia-integrate/z-ai/glm5": {}
@@ -88,10 +84,11 @@
         "id": "writer",
         "workspace": "${AGENT_WORKSPACE}/writer",
         "model": {
-          "primary": "google-antigravity/claude-opus-4-5-thinking",
+          "primary": "openai-codex/gpt-5.2",
           "fallbacks": [
             "openai-codex/gpt-5.3-codex",
-            "openai-codex/gpt-5.2"
+            "anthropic/claude-sonnet-4-6",
+            "anthropic/claude-opus-4-6"
           ]
         }
       }
