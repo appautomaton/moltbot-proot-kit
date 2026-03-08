@@ -4,7 +4,8 @@
   "packageManager": "pnpm@10.23.0",
   "scripts": {
     "openclaw": "node scripts/openclaw.mjs",
-    "openclaw:install": "pnpm --dir openclaw install",
+    "openclaw:gateway:restart": "node scripts/openclaw.mjs wrapper:gateway:restart",
+    "openclaw:install": "pnpm --dir openclaw install --package-import-method=copy",
     "openclaw:build": "pnpm --dir openclaw build",
     "openclaw:ui:build": "pnpm --dir openclaw ui:build"
   }

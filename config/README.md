@@ -1,16 +1,10 @@
 # Configuration Reference
 
-This directory contains **reference configuration files** for users who have already completed the initial setup.
+This directory contains the repo-local configuration used by this monorepo wrapper.
 
 ## Prerequisites
 
-You must first run the initial setup wizard:
-
-```bash
-pnpm openclaw setup --mode local --non-interactive
-```
-
-This creates your actual config at `~/.openclaw/openclaw.json`.
+Copy `config/.env.template` to `config/.env` and fill in the values you use. The wrapper reads `config/.env` automatically.
 
 ## File Structure
 
@@ -39,21 +33,26 @@ This repo’s `config/openclaw.json` is **modular**: it uses OpenClaw’s JSON5 
 
 When you run `pnpm openclaw gateway` from this repo, the wrapper also starts a small bridge for modular configs: it watches `openclaw.d/*.json5` next to the active config and "touches" the root `openclaw.json` so the gateway's existing reload path is triggered.
 
+The wrapper also watches `config/.env` for gateway runs. When `.env` changes, the wrapper gracefully replaces the gateway child so new env-backed config values take effect without a manual restart.
+
+Manual wrapper restart uses the same controlled child replacement path:
+
+```bash
+pnpm openclaw:gateway:restart
+pnpm openclaw:gateway:restart -- --dev
+pnpm openclaw:gateway:restart -- --profile qa
+```
+
 ## Customizing Your Setup
 
-1. **Run the initial setup first** (if you haven't):
-   ```bash
-   pnpm openclaw setup --mode local --non-interactive
-   ```
-
-2. **Create your `.env` from template**:
+1. **Create your `.env` from template**:
    ```bash
    cp config/.env.template config/.env
    # Edit config/.env with your actual API keys
    ```
 
-3. **Customize `~/.openclaw/openclaw.json`**:
-   - Refer to `config/openclaw.json` as an example
+2. **Customize `config/openclaw.json` and `config/openclaw.d/`**:
+   - `config/openclaw.json` is the active entrypoint in this repo
    - Use `${ENV_VAR_NAME}` syntax for secrets
    - Add variables to your `config/.env` as needed
    - Consult the [OpenClaw docs](https://docs.openclaw.ai/gateway/configuration) or ask **Claude Code / Codex** for help
@@ -75,8 +74,7 @@ See `.env.template` for all available variables. Key ones:
 
 ## Important Notes
 
-- If `OPENCLAW_CONFIG_PATH=config/openclaw.json` is set in `config/.env`, OpenClaw will use this repo’s modular config directly.
-- If you copy the config to `~/.openclaw/openclaw.json`, also copy `config/openclaw.d/` alongside it (or update `$include` paths).
+- `OPENCLAW_CONFIG_PATH=config/openclaw.json` points OpenClaw at this repo’s modular config.
 - Set `OPENCLAW_INCLUDE_TOUCH_BRIDGE=0` to disable the wrapper's fragment-watch bridge.
 - **Never commit `.env`** — It's gitignored for a reason
 - **Never hardcode secrets in JSON** — Always use `${VAR}` substitution

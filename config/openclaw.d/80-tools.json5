@@ -14,7 +14,11 @@
     "web": {
       "search": {
         "enabled": true,
-        "provider": "perplexity",
+        "provider": "grok",
+        "grok": {
+          "apiKey": "${XAI_API_KEY}",
+          "model": "grok-4-1-fast"
+        },
         "perplexity": {
           "apiKey": "${PERPLEXITY_API_KEY}",
           "baseUrl": "https://api.perplexity.ai/v2",

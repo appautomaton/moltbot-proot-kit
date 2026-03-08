@@ -6,14 +6,14 @@ This project uses a local pnpm build. All commands are run via:
 pnpm openclaw <command> <subcommand> [options]
 ```
 
-Run from either `openclaw-platform/` or `openclaw/`. Uses prod profile at `~/.openclaw/` (legacy `~/.clawdbot/` is still supported).
+Run from the repo root. The monorepo default is repo-local state/config via `config/.env`, not the upstream home-directory defaults.
 
 ---
 
 ## Build & Install
 
 ```bash
-pnpm openclaw:install      # Install dependencies
+pnpm openclaw:install      # Install dependencies (uses copy import method for proot safety)
 pnpm openclaw:ui:build     # Build the UI
 pnpm openclaw:build        # Build the CLI
 ```
@@ -23,17 +23,29 @@ pnpm openclaw:build        # Build the CLI
 ## Gateway
 
 ```bash
-pnpm openclaw gateway                # Run the gateway
-pnpm openclaw gateway status         # Check gateway status
-pnpm openclaw gateway --port 18789   # Run on custom port
-pnpm openclaw gateway --force        # Kill existing listener and start
+pnpm openclaw gateway                              # Run the wrapper-managed gateway
+pnpm openclaw:gateway:restart                      # Restart the running wrapper-managed gateway
+pnpm openclaw:gateway:restart -- --dev             # Restart the running dev gateway wrapper
+pnpm openclaw:gateway:restart -- --profile qa      # Restart a named profile wrapper
+pnpm openclaw gateway status                       # Check gateway status
+pnpm openclaw gateway --port 18789                 # Run on custom port
+pnpm openclaw gateway --force                      # Kill existing listener and start
 ```
 
-When started through this repo wrapper, `pnpm openclaw gateway` also watches `openclaw.d/*.json5` next to the active config and touches the root config file to trigger reload via OpenClaw's existing watcher. Set `OPENCLAW_INCLUDE_TOUCH_BRIDGE=0` to disable this behavior.
+Wrapper behavior for `pnpm openclaw gateway`:
+
+- Watches `config/openclaw.json` through OpenClaw's native reload path.
+- Watches `config/openclaw.d/*.json5` through the wrapper touch bridge.
+- Watches `config/.env`; when it changes, the wrapper replaces the running gateway child with a new one built from the updated env.
+- `pnpm openclaw:gateway:restart` signals the running wrapper to do the same controlled child replacement on demand.
+- Set `OPENCLAW_INCLUDE_TOUCH_BRIDGE=0` to disable the fragment-touch bridge.
+
+`pnpm openclaw:gateway:restart` is a wrapper command. It is intentionally separate from upstream `pnpm openclaw gateway restart`.
 
 Dev profile commands (from project root):
 ```bash
 pnpm openclaw --dev gateway                     # Run gateway in dev profile (default dev port 19001)
+pnpm openclaw:gateway:restart -- --dev         # Restart the running dev wrapper
 pnpm openclaw --dev gateway --bind lan          # Expose dev gateway on LAN
 pnpm openclaw --dev gateway status              # Check dev gateway status
 ```
@@ -141,8 +153,8 @@ pnpm openclaw <command> --help   # Show help for specific command
 
 ## Notes
 
-- **Prod profile**: `~/.openclaw/` (default; legacy `~/.clawdbot/` supported)
-- **Dev profile**: `~/.openclaw-dev/` (use `--dev` flag)
-- **Custom profile**: `--profile <name>` uses `~/.openclaw-<name>/`
+- **Monorepo default**: repo-local paths come from `config/.env`
+- **Dev profile**: use `--dev`
+- **Custom profile**: use `--profile <name>`
 
 Docs: https://docs.openclaw.ai/cli

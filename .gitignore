@@ -1,6 +1,21 @@
 # Environment files with secrets
 .env
-config/.env
+.env.*
+*.env
+*.env.*
+**/.env
+**/.env.*
+**/*.env
+**/*.env.*
+!config/.env.template
+!**/.env.template
+!**/*.env.template
+!**/.env.example
+!**/*.env.example
+
+# Generated local login/config snapshots
+config/openclaw.login.json
+config/openclaw.login.json.bak
 
 # Repo-local OpenClaw state (credentials, sessions, logs, etc.)
 bots/*
