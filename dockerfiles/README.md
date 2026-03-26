@@ -1,16 +1,17 @@
 # `dockerfiles/`
 
-Docker build contexts for **sandbox images** used by agents that run with `sandbox.mode=all` and a `sandbox.docker.image` setting in `config/openclaw/agents/list/*.json5`.
+Docker build contexts for **sandbox images** used by agents with `sandbox.mode=all` and a `sandbox.docker.image` in `config/openclaw/agents/list/*.json5`.
 
-## What’s here
+## Images
 
-- `dockerfiles/writer/` — document-oriented sandbox image (example agent config: `config/openclaw/agents/list/writer.json5`)
-- `dockerfiles/code-cli/` — coding sandbox image (example agent config: `config/openclaw/agents/list/coder-cli.json5`)
-- `dockerfiles/social-info/` — additional sandbox context (if referenced by an agent config)
+| Directory | Image tag | Agent config |
+|---|---|---|
+| `writer/` | `localhost/openclaw-sandbox-writer:bookworm` | `agents/list/writer.json5` |
+| `code-cli/` | `localhost/openclaw-sandbox-code-cli:bookworm-slim` | `agents/list/coder-cli.json5` |
 
-## Build examples
+`sandbox-moltbook.json5` references `localhost/openclaw-sandbox-slim:latest` — no build context exists here yet. Build or pull that image separately.
 
-Build the writer sandbox image referenced by `"image": "localhost/openclaw-sandbox-writer:bookworm"`:
+## Build example
 
 ```bash
 docker build -f dockerfiles/writer/Dockerfile \
@@ -18,16 +19,8 @@ docker build -f dockerfiles/writer/Dockerfile \
   dockerfiles/writer
 ```
 
-Build the code-cli sandbox image referenced by `"image": "localhost/openclaw-sandbox-code-cli:bookworm-slim"`:
-
-```bash
-docker build -f dockerfiles/code-cli/Dockerfile \
-  -t localhost/openclaw-sandbox-code-cli:bookworm-slim \
-  dockerfiles/code-cli
-```
-
 ## Notes
 
-- You only need to build these images if you enable Docker sandboxing for the corresponding agent.
-- Image tags must match what your agent config references.
+- Only build images you actually need (i.e. when Docker sandboxing is enabled for that agent).
+- Image tags must match what the agent config references.
 

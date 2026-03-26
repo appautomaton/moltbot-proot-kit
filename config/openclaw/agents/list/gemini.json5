@@ -2,9 +2,9 @@
   "id": "gemini",
   "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
   "model": {
-    "primary": "google-antigravity/gemini-3-pro-high",
+    "primary": "google-gemini-cli/gemini-3.1-pro-preview",
     "fallbacks": [
-      "google-antigravity/gemini-3-pro-low"
+      "google-gemini-cli/gemini-3-flash-preview"
     ]
   },
   "tools": {

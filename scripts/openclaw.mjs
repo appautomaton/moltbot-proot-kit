@@ -79,7 +79,12 @@ const envFile = path.join(__dirname, '..', 'config', '.env');
 loadEnvFile(envFile);
 
 // Normalize repo-relative path env vars (so values like "bots" resolve to <repo>/bots).
-normalizeRepoRelativePathEnvVars(['OPENCLAW_STATE_DIR', 'CLAWDBOT_STATE_DIR']);
+normalizeRepoRelativePathEnvVars([
+  'OPENCLAW_STATE_DIR',
+  'CLAWDBOT_STATE_DIR',
+  'OPENCLAW_CONFIG_PATH',
+  'CLAWDBOT_CONFIG_PATH',
+]);
 
 // Compatibility aliases:
 // - OpenClaw expects OPENCLAW_GATEWAY_TOKEN (and friends).
@@ -89,6 +94,12 @@ if (!hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN) && hasNonEmpty(process.env.
 }
 if (!hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN) && hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN)) {
   process.env.GATEWAY_AUTH_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN;
+}
+if (!hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH) && hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH)) {
+  process.env.OPENCLAW_CONFIG_PATH = process.env.CLAWDBOT_CONFIG_PATH;
+}
+if (!hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH) && hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH)) {
+  process.env.CLAWDBOT_CONFIG_PATH = process.env.OPENCLAW_CONFIG_PATH;
 }
 
 const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {

@@ -1,6 +1,7 @@
 {
   "id": "writer",
   "workspace": "${OPENCLAW_STATE_DIR}/workspaces/writer",
+  "model": "openai-codex/gpt-5.4",
   "sandbox": {
     "mode": "all",
     "workspaceAccess": "rw",

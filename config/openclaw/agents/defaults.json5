@@ -1,18 +1,17 @@
 {
   "model": {
-    "primary": "openai-codex/gpt-5.2",
+    "primary": "openai-codex/gpt-5.4",
     "fallbacks": [
-      "google-antigravity/claude-opus-4-5-thinking",
-      "google-antigravity/claude-sonnet-4-5-thinking",
-      "google-antigravity/gemini-3-pro-high"
+      "openai-codex/gpt-5.3-codex",
+      "nvidia-integrate/z-ai/glm4.7"
     ]
   },
   "models": {
     "nvidia-integrate/z-ai/glm4.7": {},
-    "google-antigravity/claude-opus-4-5-thinking": {},
-    "google-antigravity/claude-sonnet-4-5-thinking": {},
-    "google-antigravity/gemini-3-pro-high": {},
-    "google-antigravity/gemini-3-pro-low": {},
+    "google-gemini-cli/gemini-3.1-pro-preview": {},
+    "google-gemini-cli/gemini-3-flash-preview": {},
+    "openai-codex/gpt-5.4": {},
+    "openai-codex/gpt-5.3-codex": {},
     "openai-codex/gpt-5.2": {}
   },
   "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
@@ -27,9 +26,10 @@
   "compaction": {
     "mode": "safeguard"
   },
-  "thinkingDefault": "medium",
+  "thinkingDefault": "high",
   "heartbeat": {
-    "every": "1h"
+    "every": "1h",
+    "lightContext": true
   },
   "maxConcurrent": 3,
   "subagents": {

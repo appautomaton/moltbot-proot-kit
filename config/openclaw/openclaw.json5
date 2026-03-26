@@ -1,18 +1,651 @@
 {
-  agents: { $include: "./agents/index.json5" },
-  auth: { $include: "./auth.json5" },
-  bindings: { $include: "./bindings.json5" },
-  browser: { $include: "./browser.json5" },
-  channels: { $include: "./channels.json5" },
-  commands: { $include: "./commands.json5" },
-  gateway: { $include: "./gateway.json5" },
-  hooks: { $include: "./hooks.json5" },
-  messages: { $include: "./messages.json5" },
-  meta: { $include: "./meta.json5" },
-  models: { $include: "./models.json5" },
-  plugins: { $include: "./plugins.json5" },
-  skills: { $include: "./skills.json5" },
-  tools: { $include: "./tools.json5" },
-  ui: { $include: "./ui.json5" },
-  wizard: { $include: "./wizard.json5" }
+  "meta": {
+    "lastTouchedVersion": "2026.3.24-beta.2",
+    "lastTouchedAt": "2026-03-26T13:48:24.420Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-01-28T02:34:14.388Z",
+    "lastRunVersion": "2026.1.25",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "browser": {
+    "enabled": true,
+    "evaluateEnabled": false,
+    "executablePath": "${BROWSER_EXECUTABLE_PATH}",
+    "headless": false,
+    "noSandbox": false,
+    "defaultProfile": "openclaw"
+  },
+  "ui": {
+    "seamColor": "#0018a8",
+    "assistant": {
+      "name": "Lux",
+      "avatar": "🦞"
+    }
+  },
+  "auth": {
+    "profiles": {
+      "google-gemini-cli:default": {
+        "provider": "google-gemini-cli",
+        "mode": "oauth"
+      },
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "oauth"
+      }
+    }
+  },
+  "models": {
+    "providers": {
+      "nvidia-integrate": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVIDIA_INTEGRATE_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5 (NVIDIA Integrate)",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16384
+          },
+          {
+            "id": "minimaxai/minimax-m2.1",
+            "name": "MiniMax M2.1 (NVIDIA Integrate)",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "z-ai/glm4.7",
+            "name": "GLM 4.7 (NVIDIA Integrate)",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.4",
+        "fallbacks": [
+          "openai-codex/gpt-5.3-codex",
+          "nvidia-integrate/z-ai/glm4.7"
+        ]
+      },
+      "models": {
+        "nvidia-integrate/z-ai/glm4.7": {},
+        "google-gemini-cli/gemini-3.1-pro-preview": {},
+        "google-gemini-cli/gemini-3-flash-preview": {},
+        "openai-codex/gpt-5.4": {},
+        "openai-codex/gpt-5.3-codex": {},
+        "openai-codex/gpt-5.2": {}
+      },
+      "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
+      "memorySearch": {
+        "provider": "local",
+        "remote": {
+          "batch": {
+            "enabled": false
+          }
+        }
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "thinkingDefault": "high",
+      "heartbeat": {
+        "every": "1h",
+        "lightContext": true
+      },
+      "maxConcurrent": 3,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "sandbox": {
+        "mode": "off"
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "groupChat": {
+          "mentionPatterns": [
+            "\\b@?ac_m1p_default_bot\\b"
+          ]
+        },
+        "subagents": {
+          "allowAgents": [
+            "gemini",
+            "coder-cli"
+          ]
+        },
+        "tools": {
+          "profile": "full",
+          "allow": [
+            "group:web",
+            "exa-search",
+            "group:fs",
+            "group:runtime",
+            "group:sessions",
+            "group:memory",
+            "browser",
+            "canvas"
+          ],
+          "deny": [
+            "gateway",
+            "nodes",
+            "cron"
+          ],
+          "fs": {
+            "workspaceOnly": true
+          }
+        }
+      },
+      {
+        "id": "gemini",
+        "workspace": "${OPENCLAW_STATE_DIR}/workspaces/default",
+        "model": {
+          "primary": "google-gemini-cli/gemini-3.1-pro-preview",
+          "fallbacks": [
+            "google-gemini-cli/gemini-3-flash-preview"
+          ]
+        },
+        "tools": {
+          "profile": "minimal"
+        }
+      },
+      {
+        "id": "sandbox-moltbook",
+        "workspace": "${OPENCLAW_STATE_DIR}/workspaces/sandboxes-moltbook",
+        "model": {
+          "primary": "google-gemini-cli/gemini-3.1-pro-preview",
+          "fallbacks": [
+            "google-gemini-cli/gemini-3-flash-preview"
+          ]
+        },
+        "sandbox": {
+          "mode": "all",
+          "workspaceAccess": "rw",
+          "scope": "agent",
+          "workspaceRoot": "${OPENCLAW_STATE_DIR}/workspaces/sandboxes-moltbook",
+          "docker": {
+            "image": "localhost/openclaw-sandbox-slim:latest",
+            "network": "bridge",
+            "env": {
+              "MOLTBOOK_API_KEY": "${MOLTBOOK_API_KEY}"
+            }
+          }
+        },
+        "tools": {
+          "profile": "full",
+          "deny": [
+            "nodes",
+            "gateway",
+            "cron",
+            "browser",
+            "canvas"
+          ],
+          "exec": {
+            "host": "sandbox",
+            "security": "full",
+            "ask": "off"
+          },
+          "sandbox": {
+            "tools": {
+              "allow": [
+                "exec",
+                "process",
+                "bash",
+                "read",
+                "write",
+                "edit",
+                "glob",
+                "grep",
+                "image"
+              ],
+              "deny": [
+                "browser",
+                "cron",
+                "nodes",
+                "gateway"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": "coder-cli",
+        "workspace": "${OPENCLAW_STATE_DIR}/workspaces/code-cli",
+        "model": "openai-codex/gpt-5.2",
+        "groupChat": {
+          "mentionPatterns": [
+            "\\b@?ac_m1p_coder_bot\\b"
+          ]
+        },
+        "sandbox": {
+          "mode": "all",
+          "workspaceAccess": "rw",
+          "scope": "agent",
+          "workspaceRoot": "${OPENCLAW_STATE_DIR}/workspaces/code-cli",
+          "docker": {
+            "image": "localhost/openclaw-sandbox-code-cli:bookworm-slim",
+            "readOnlyRoot": false,
+            "network": "bridge"
+          }
+        },
+        "tools": {
+          "profile": "full",
+          "allow": [
+            "group:fs",
+            "group:runtime",
+            "group:sessions",
+            "memory_search",
+            "memory_get",
+            "group:web"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "gateway",
+            "nodes",
+            "cron"
+          ],
+          "exec": {
+            "host": "sandbox",
+            "security": "full",
+            "ask": "off"
+          },
+          "sandbox": {
+            "tools": {
+              "allow": [
+                "group:fs",
+                "group:runtime",
+                "group:sessions",
+                "memory_search",
+                "memory_get",
+                "group:web"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": "writer",
+        "workspace": "${OPENCLAW_STATE_DIR}/workspaces/writer",
+        "model": "openai-codex/gpt-5.4",
+        "sandbox": {
+          "mode": "all",
+          "workspaceAccess": "rw",
+          "scope": "agent",
+          "workspaceRoot": "${OPENCLAW_STATE_DIR}/workspaces/writer",
+          "docker": {
+            "image": "localhost/openclaw-sandbox-writer:bookworm",
+            "readOnlyRoot": true,
+            "network": "bridge",
+            "env": {
+              "HOME": "/workspace/.home",
+              "XDG_CACHE_HOME": "/workspace/.cache",
+              "XDG_CONFIG_HOME": "/workspace/.config",
+              "XDG_DATA_HOME": "/workspace/.local/share",
+              "PLAYWRIGHT_BROWSERS_PATH": "/ms-playwright"
+            },
+            "setupCommand": "mkdir -p /workspace/.home /workspace/.cache /workspace/.config /workspace/.local/share"
+          }
+        },
+        "tools": {
+          "profile": "full",
+          "allow": [
+            "group:fs",
+            "group:runtime",
+            "group:sessions",
+            "memory_search",
+            "memory_get",
+            "group:web",
+            "exa-search"
+          ],
+          "deny": [
+            "browser",
+            "canvas",
+            "gateway",
+            "nodes",
+            "cron"
+          ],
+          "exec": {
+            "host": "sandbox",
+            "security": "full",
+            "ask": "off"
+          },
+          "sandbox": {
+            "tools": {
+              "allow": [
+                "group:fs",
+                "group:runtime",
+                "group:sessions",
+                "memory_search",
+                "memory_get",
+                "group:web",
+                "exa-search"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "minimal",
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "perplexity"
+      },
+      "fetch": {
+        "enabled": true
+      }
+    },
+    "agentToAgent": {
+      "enabled": false,
+      "allow": []
+    },
+    "elevated": {
+      "enabled": false
+    },
+    "exec": {
+      "host": "gateway",
+      "security": "allowlist",
+      "ask": "off",
+      "safeBins": [
+        "jq",
+        "grep",
+        "head",
+        "tail"
+      ],
+      "safeBinProfiles": {
+        "jq": {
+          "maxPositional": 1,
+          "allowedValueFlags": [
+            "--arg",
+            "--argjson",
+            "--argstr"
+          ],
+          "deniedFlags": [
+            "--argfile",
+            "--rawfile",
+            "--slurpfile",
+            "--from-file",
+            "--library-path",
+            "-L",
+            "-f"
+          ]
+        },
+        "grep": {
+          "maxPositional": 0,
+          "allowedValueFlags": [
+            "--regexp",
+            "--max-count",
+            "--after-context",
+            "--before-context",
+            "--context",
+            "--devices",
+            "--binary-files",
+            "--exclude",
+            "--include",
+            "--label",
+            "-e",
+            "-m",
+            "-A",
+            "-B",
+            "-C",
+            "-D"
+          ],
+          "deniedFlags": [
+            "--file",
+            "--exclude-from",
+            "--dereference-recursive",
+            "--directories",
+            "--recursive",
+            "-f",
+            "-d",
+            "-r",
+            "-R"
+          ]
+        },
+        "head": {
+          "maxPositional": 0,
+          "allowedValueFlags": [
+            "--lines",
+            "--bytes",
+            "-n",
+            "-c"
+          ]
+        },
+        "tail": {
+          "maxPositional": 0,
+          "allowedValueFlags": [
+            "--lines",
+            "--bytes",
+            "--sleep-interval",
+            "--max-unchanged-stats",
+            "--pid",
+            "-n",
+            "-c"
+          ]
+        }
+      },
+      "applyPatch": {
+        "enabled": true
+      }
+    },
+    "subagents": {
+      "tools": {
+        "deny": [
+          "gateway",
+          "nodes",
+          "cron",
+          "browser",
+          "canvas"
+        ]
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "telegram",
+        "accountId": "default"
+      }
+    },
+    {
+      "agentId": "coder-cli",
+      "match": {
+        "channel": "telegram",
+        "accountId": "coder-cli"
+      }
+    },
+    {
+      "agentId": "writer",
+      "match": {
+        "channel": "telegram",
+        "accountId": "writer"
+      }
+    }
+  ],
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "reset": {
+      "mode": "idle",
+      "idleMinutes": 10080
+    }
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": false
+        },
+        "command-logger": {
+          "enabled": false
+        },
+        "session-memory": {
+          "enabled": true
+        },
+        "soul-evil": {
+          "enabled": false
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "configWrites": false,
+      "dmPolicy": "pairing",
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "groupAllowFrom": [
+        "${TELEGRAM_OWNER_ID}"
+      ],
+      "groupPolicy": "allowlist",
+      "actions": {
+        "sendMessage": true
+      },
+      "accounts": {
+        "default": {
+          "name": "ac-m1-default",
+          "dmPolicy": "pairing",
+          "botToken": "${TELEGRAM_BOT_TOKEN_DEFAULT}",
+          "groupPolicy": "allowlist",
+          "streaming": "partial"
+        },
+        "coder-cli": {
+          "name": "coder-cli",
+          "enabled": true,
+          "dmPolicy": "pairing",
+          "botToken": "${TELEGRAM_BOT_TOKEN_CODER_CLI}",
+          "groupPolicy": "allowlist",
+          "streaming": "partial"
+        },
+        "writer": {
+          "name": "writer",
+          "enabled": true,
+          "dmPolicy": "pairing",
+          "botToken": "${TELEGRAM_BOT_TOKEN_WRITER}",
+          "groupPolicy": "allowlist",
+          "streaming": "partial"
+        }
+      },
+      "streaming": "partial"
+    }
+  },
+  "canvasHost": {
+    "root": "${OPENCLAW_STATE_DIR}/workspaces/default"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "allowBundled": [
+      "__none__"
+    ],
+    "install": {
+      "nodeManager": "pnpm"
+    }
+  },
+  "plugins": {
+    "enabled": true,
+    "allow": [
+      "telegram",
+      "memory-core",
+      "google-gemini-cli-auth",
+      "exa-search",
+      "google"
+    ],
+    "load": {
+      "paths": [
+        "${OPENCLAW_STATE_DIR}/../plugins"
+      ]
+    },
+    "entries": {
+      "exa-search": {
+        "enabled": true,
+        "config": {
+          "apiKeyEnv": "EXA_API_KEY"
+        }
+      },
+      "google-gemini-cli-auth": {
+        "enabled": true
+      },
+      "memory-core": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      },
+      "perplexity": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": "${PERPLEXITY_API_KEY}",
+            "baseUrl": "https://api.perplexity.ai/v2",
+            "model": "sonar-pro"
+          }
+        }
+      },
+      "google": {
+        "enabled": true
+      }
+    }
+  }
 }

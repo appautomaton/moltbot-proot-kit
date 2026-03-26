@@ -22,29 +22,90 @@
     "enabled": false
   },
   "exec": {
-    "host": "sandbox",
+    "host": "gateway",
     "security": "allowlist",
     "ask": "off",
     "applyPatch": {
       "enabled": true
     },
     "safeBins": [
-      "bash",
-      "sh",
-      "curl",
       "jq",
-      "cat",
-      "ls",
-      "find",
       "grep",
-      "sed",
       "head",
-      "tail",
-      "env",
-      "printenv",
-      "id",
-      "uname"
-    ]
+      "tail"
+    ],
+    "safeBinProfiles": {
+      "jq": {
+        "maxPositional": 1,
+        "allowedValueFlags": [
+          "--arg",
+          "--argjson",
+          "--argstr"
+        ],
+        "deniedFlags": [
+          "--argfile",
+          "--rawfile",
+          "--slurpfile",
+          "--from-file",
+          "--library-path",
+          "-L",
+          "-f"
+        ]
+      },
+      "grep": {
+        "maxPositional": 0,
+        "allowedValueFlags": [
+          "--regexp",
+          "--max-count",
+          "--after-context",
+          "--before-context",
+          "--context",
+          "--devices",
+          "--binary-files",
+          "--exclude",
+          "--include",
+          "--label",
+          "-e",
+          "-m",
+          "-A",
+          "-B",
+          "-C",
+          "-D"
+        ],
+        "deniedFlags": [
+          "--file",
+          "--exclude-from",
+          "--dereference-recursive",
+          "--directories",
+          "--recursive",
+          "-f",
+          "-d",
+          "-r",
+          "-R"
+        ]
+      },
+      "head": {
+        "maxPositional": 0,
+        "allowedValueFlags": [
+          "--lines",
+          "--bytes",
+          "-n",
+          "-c"
+        ]
+      },
+      "tail": {
+        "maxPositional": 0,
+        "allowedValueFlags": [
+          "--lines",
+          "--bytes",
+          "--sleep-interval",
+          "--max-unchanged-stats",
+          "--pid",
+          "-n",
+          "-c"
+        ]
+      }
+    }
   },
   "subagents": {
     "tools": {

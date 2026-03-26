@@ -38,14 +38,37 @@ pnpm openclaw models status
 
 ```
 config/
-  .env
-  .env.template
-  openclaw.template.json   # optional thin include template (no secrets)
+  .env                       # local secrets (gitignored)
+  .env.template              # secret template
+  openclaw.template.json     # optional thin include template (no secrets)
   openclaw/
-    openclaw.json5         # root (JSON5), uses $include
+    openclaw.json5           # include-only root wiring
     agents/
-      index.json5
-    *.json5                # feature fragments (models/channels/hooks/tools/...)
+      index.json5            # agent list orchestrator
+      defaults.json5         # shared agent defaults
+      list/
+        coder-cli.json5
+        gemini.json5
+        main.json5
+        sandbox-moltbook.json5
+        writer.json5
+    auth.json5               # feature fragments ↓
+    bindings.json5
+    browser.json5
+    channels.json5
+    commands.json5
+    canvas-host.json5
+    gateway.json5
+    hooks.json5
+    messages.json5
+    meta.json5
+    models.json5
+    plugins.json5
+    session.json5
+    skills.json5
+    tools.json5
+    ui.json5
+    wizard.json5
 ```
 
 ## Editing rules
@@ -53,4 +76,6 @@ config/
 - Never commit secrets inside `config/openclaw/**/*.json5` (or anywhere in git).
 - Put secrets in `config/.env` and reference them from JSON5 via `${ENV_VAR}` (missing/empty env vars will fail config load).
 - Keep `bots/openclaw.json` as a thin `$include` entrypoint so config stays modular.
+- Treat `config/openclaw/openclaw.json5` as wiring only; make substantive config edits in the fragment files.
 - Avoid commands that write config back to disk if you want to preserve the `$include` structure (some commands rewrite to a single flattened JSON file).
+- `agents.list.main` is intentionally workspace-only for filesystem edits; use a specialist coding agent or broader policy change for repo-wide edits.

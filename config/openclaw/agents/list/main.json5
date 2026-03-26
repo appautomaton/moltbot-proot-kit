@@ -21,14 +21,16 @@
       "group:runtime",
       "group:sessions",
       "group:memory",
-      "browser"
+      "browser",
+      "canvas"
     ],
+    "fs": {
+      "workspaceOnly": true
+    },
     "deny": [
-      "apply_patch",
       "gateway",
       "nodes",
-      "cron",
-      "canvas"
+      "cron"
     ]
   }
 }

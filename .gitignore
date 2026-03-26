@@ -15,6 +15,7 @@ Thumbs.db
 
 # Node
 node_modules/
+.pnpm-store/
 npm-debug.log*
 
 # Build artifacts

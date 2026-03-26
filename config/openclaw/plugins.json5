@@ -8,7 +8,7 @@
   "allow": [
     "telegram",
     "memory-core",
-    "google-antigravity-auth",
+    "google-gemini-cli-auth",
     "exa-search"
   ],
   "entries": {
@@ -18,7 +18,7 @@
         "apiKeyEnv": "EXA_API_KEY"
       }
     },
-    "google-antigravity-auth": {
+    "google-gemini-cli-auth": {
       "enabled": true
     },
     "memory-core": {

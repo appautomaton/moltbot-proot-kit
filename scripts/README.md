@@ -1,18 +1,20 @@
 # `scripts/`
 
-Small repo-local wrappers/helpers for running OpenClaw in this monorepo-style setup.
+Repo-local wrappers for running OpenClaw in this monorepo setup.
 
 ## `openclaw.mjs`
 
-`pnpm openclaw <command>` runs `scripts/openclaw.mjs`, which then runs the real OpenClaw CLI inside the `openclaw/` submodule.
+`pnpm openclaw <command>` → `scripts/openclaw.mjs` → `pnpm --dir openclaw openclaw ...`
 
-Key behaviors:
+Behaviors:
 
-- Loads `config/.env` into the child process environment (does **not** override already-set env vars).
-- Normalizes repo-relative path env vars (e.g. `OPENCLAW_STATE_DIR=bots` becomes an absolute path relative to the repo root).
-- Executes: `pnpm --dir openclaw openclaw ...`
+- Loads `config/.env` into the child process env (does **not** override already-set vars).
+- Normalizes repo-relative path env vars (e.g. `OPENCLAW_STATE_DIR=bots` → absolute path from repo root).
+- Expands `~` to home directory in path env vars.
+- Maps legacy env var names to current ones (`CLAWDBOT_STATE_DIR` → `OPENCLAW_STATE_DIR`, `CLAWDBOT_CONFIG_PATH` → `OPENCLAW_CONFIG_PATH`, `GATEWAY_AUTH_TOKEN` → `OPENCLAW_GATEWAY_TOKEN`).
+- Normalizes `--dev` flag position (moves it to the start of the arg list).
 
 ## `browser-service.sh`
 
-Helper script for starting the browser control sidecar (useful in environments where you need a predictable browser/Xvfb setup, e.g. proot).
+Starts the browser control sidecar (for environments needing a predictable browser/Xvfb setup, e.g. proot).
 
