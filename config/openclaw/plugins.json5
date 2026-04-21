@@ -8,7 +8,6 @@
   "allow": [
     "telegram",
     "memory-core",
-    "google-gemini-cli-auth",
     "exa-search"
   ],
   "entries": {
@@ -17,9 +16,6 @@
       "config": {
         "apiKeyEnv": "EXA_API_KEY"
       }
-    },
-    "google-gemini-cli-auth": {
-      "enabled": true
     },
     "memory-core": {
       "enabled": true

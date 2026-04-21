@@ -71,8 +71,9 @@ pnpm openclaw config
 For this wrapper repo, the default workflow is repo-local state:
 
 - `OPENCLAW_STATE_DIR=bots` (typically set in `config/.env`)
-- Active config entrypoint: `bots/openclaw.json`
-- Modular config root: `config/openclaw/openclaw.json5`
+- Source config root: `config/openclaw/openclaw.json5`
+- Generated runtime config: `bots/.runtime/openclaw.runtime.json5`
+- `bots/openclaw.json` remains the tracked compatibility entrypoint, but the wrapper renders the actual runtime config file before launch.
 
 Upstream OpenClaw profile behavior (context only):
 

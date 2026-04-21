@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { prepareRuntimeConfig } from './openclaw-config-runtime.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, '..');
@@ -72,48 +73,84 @@ function normalizeDevFlag(args) {
   return ['--dev', ...args.slice(0, devIndex), ...args.slice(devIndex + 1)];
 }
 
-const args = normalizeDevFlag(process.argv.slice(2));
+function resolveRepoModularConfigSourcePath() {
+  const explicitSource = process.env.OPENCLAW_SOURCE_CONFIG_PATH;
+  if (hasNonEmpty(explicitSource)) {
+    return resolveUserPathFromRepoRoot(explicitSource);
+  }
 
-// Load config/.env for API keys and secrets
-const envFile = path.join(__dirname, '..', 'config', '.env');
-loadEnvFile(envFile);
+  const configuredPath = process.env.OPENCLAW_CONFIG_PATH;
+  const repoConfigPath = path.join(REPO_ROOT, 'config', 'openclaw', 'openclaw.json5');
+  if (hasNonEmpty(configuredPath)) {
+    const resolvedConfiguredPath = resolveUserPathFromRepoRoot(configuredPath);
+    if (path.resolve(resolvedConfiguredPath) === path.resolve(repoConfigPath)) {
+      return repoConfigPath;
+    }
+    return null;
+  }
 
-// Normalize repo-relative path env vars (so values like "bots" resolve to <repo>/bots).
-normalizeRepoRelativePathEnvVars([
-  'OPENCLAW_STATE_DIR',
-  'CLAWDBOT_STATE_DIR',
-  'OPENCLAW_CONFIG_PATH',
-  'CLAWDBOT_CONFIG_PATH',
-]);
-
-// Compatibility aliases:
-// - OpenClaw expects OPENCLAW_GATEWAY_TOKEN (and friends).
-// - This platform historically used GATEWAY_AUTH_TOKEN in config/.env and config/openclaw.json.
-if (!hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN) && hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN)) {
-  process.env.OPENCLAW_GATEWAY_TOKEN = process.env.GATEWAY_AUTH_TOKEN;
-}
-if (!hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN) && hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN)) {
-  process.env.GATEWAY_AUTH_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN;
-}
-if (!hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH) && hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH)) {
-  process.env.OPENCLAW_CONFIG_PATH = process.env.CLAWDBOT_CONFIG_PATH;
-}
-if (!hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH) && hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH)) {
-  process.env.CLAWDBOT_CONFIG_PATH = process.env.OPENCLAW_CONFIG_PATH;
+  return fs.existsSync(repoConfigPath) ? repoConfigPath : null;
 }
 
-const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {
-  stdio: 'inherit',
-  env: process.env,
-});
+async function main() {
+  const args = normalizeDevFlag(process.argv.slice(2));
 
-child.on('exit', (code, signal) => {
-  if (typeof code === 'number') process.exit(code);
-  if (signal) process.exit(128);
-  process.exit(1);
-});
+  // Load config/.env for API keys and secrets
+  const envFile = path.join(__dirname, '..', 'config', '.env');
+  loadEnvFile(envFile);
 
-child.on('error', (err) => {
-  console.error(err?.message ?? String(err));
-  process.exit(1);
-});
+  // Normalize repo-relative path env vars (so values like "bots" resolve to <repo>/bots).
+  normalizeRepoRelativePathEnvVars([
+    'OPENCLAW_STATE_DIR',
+    'CLAWDBOT_STATE_DIR',
+    'OPENCLAW_CONFIG_PATH',
+    'CLAWDBOT_CONFIG_PATH',
+    'OPENCLAW_SOURCE_CONFIG_PATH',
+  ]);
+
+  // Compatibility aliases:
+  // - OpenClaw expects OPENCLAW_GATEWAY_TOKEN (and friends).
+  // - This platform historically used GATEWAY_AUTH_TOKEN in config/.env and config/openclaw.json.
+  if (!hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN) && hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN)) {
+    process.env.OPENCLAW_GATEWAY_TOKEN = process.env.GATEWAY_AUTH_TOKEN;
+  }
+  if (!hasNonEmpty(process.env.GATEWAY_AUTH_TOKEN) && hasNonEmpty(process.env.OPENCLAW_GATEWAY_TOKEN)) {
+    process.env.GATEWAY_AUTH_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN;
+  }
+  if (!hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH) && hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH)) {
+    process.env.OPENCLAW_CONFIG_PATH = process.env.CLAWDBOT_CONFIG_PATH;
+  }
+  if (!hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH) && hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH)) {
+    process.env.CLAWDBOT_CONFIG_PATH = process.env.OPENCLAW_CONFIG_PATH;
+  }
+
+  const sourceConfigPath = resolveRepoModularConfigSourcePath();
+  if (sourceConfigPath) {
+    const stateDir = resolveUserPathFromRepoRoot(process.env.OPENCLAW_STATE_DIR || 'bots');
+    const runtimeConfig = prepareRuntimeConfig({
+      sourceConfigPath,
+      stateDir,
+    });
+    process.env.OPENCLAW_SOURCE_CONFIG_PATH = sourceConfigPath;
+    process.env.OPENCLAW_CONFIG_PATH = runtimeConfig.runtimeConfigPath;
+    process.env.CLAWDBOT_CONFIG_PATH = runtimeConfig.runtimeConfigPath;
+  }
+
+  const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+  child.on('exit', (code, signal) => {
+    if (typeof code === 'number') process.exit(code);
+    if (signal) process.exit(128);
+    process.exit(1);
+  });
+
+  child.on('error', (err) => {
+    console.error(err?.message ?? String(err));
+    process.exit(1);
+  });
+}
+
+await main();

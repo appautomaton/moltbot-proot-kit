@@ -12,7 +12,9 @@
       "${TELEGRAM_OWNER_ID}"
     ],
     "groupPolicy": "allowlist",
-    "streamMode": "partial",
+    "streaming": {
+      "mode": "partial"
+    },
     "actions": {
       "sendMessage": true
     },
@@ -22,7 +24,9 @@
         "dmPolicy": "pairing",
         "botToken": "${TELEGRAM_BOT_TOKEN_DEFAULT}",
         "groupPolicy": "allowlist",
-        "streamMode": "partial"
+        "streaming": {
+          "mode": "partial"
+        }
       },
       "coder-cli": {
         "name": "coder-cli",
@@ -30,7 +34,9 @@
         "dmPolicy": "pairing",
         "botToken": "${TELEGRAM_BOT_TOKEN_CODER_CLI}",
         "groupPolicy": "allowlist",
-        "streamMode": "partial"
+        "streaming": {
+          "mode": "partial"
+        }
       },
       "writer": {
         "name": "writer",
@@ -38,7 +44,9 @@
         "dmPolicy": "pairing",
         "botToken": "${TELEGRAM_BOT_TOKEN_WRITER}",
         "groupPolicy": "allowlist",
-        "streamMode": "partial"
+        "streaming": {
+          "mode": "partial"
+        }
       }
     }
   }

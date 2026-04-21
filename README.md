@@ -67,13 +67,14 @@ If you are setting up **Termux + proot-distro**, switch to the `proot-debian` br
 ## How config is wired
 
 - Secrets live in `config/.env` (gitignored; copy from [`config/.env.template`](config/.env.template)).
-- Config entrypoint is [`bots/openclaw.json`](bots/openclaw.json):
+- Source config entrypoint is [`bots/openclaw.json`](bots/openclaw.json):
 
 ```json5
 { $include: "../config/openclaw/openclaw.json5" }
 ```
 
-- Modular config lives under [`config/openclaw/`](config/openclaw/) (JSON5 + `$include`).
+- Modular source config lives under [`config/openclaw/`](config/openclaw/) (JSON5 + `$include`).
+- The wrapper renders that source tree into `bots/.runtime/openclaw.runtime.json5` before launch, so OpenClaw writes back to disposable runtime state instead of the tracked source fragments.
 - Config can reference env vars via `${ENV_VAR}` (missing/empty vars fail fast).
 - `OPENCLAW_STATE_DIR=bots` is supported: [`scripts/openclaw.mjs`](scripts/openclaw.mjs) treats relative paths as repo-root-relative.
 
@@ -82,8 +83,8 @@ flowchart TD
   A[pnpm openclaw COMMAND] --> B[scripts/openclaw.mjs]
   B --> C[load config/.env]
   B --> D[normalize OPENCLAW_STATE_DIR]
-  D --> E[bots/openclaw.json]
-  E --> F[config/openclaw/openclaw.json5]
+  D --> E[config/openclaw/openclaw.json5]
+  E --> F[bots/.runtime/openclaw.runtime.json5]
 ```
 
 ## Repo layout
@@ -118,11 +119,11 @@ Architecture notes: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 │  ├─ .env.template              # copy to config/.env (gitignored) and fill tokens/keys
 │  ├─ README.md                  # config wiring notes
 │  └─ openclaw/                  # modular JSON5 config (commit-safe; no secrets)
-│     ├─ openclaw.json5          # root JSON5 (uses $include)
+│     ├─ openclaw.json5          # source root JSON5 (uses $include)
 │     └─ agents/                 # agent definitions (defaults + per-agent files)
 ├─ bots/                         # repo-local state dir (gitignored; sensitive)
 │  ├─ README.md                  # migration/bootstrap notes (tracked)
-│  └─ openclaw.json              # state config entrypoint (tracked; $include -> config/openclaw/openclaw.json5)
+│  └─ openclaw.json              # compatibility entrypoint (tracked; source config reference)
 ├─ dockerfiles/                  # sandbox image build contexts used by sandboxed agents
 └─ docs/                         # extra docs for this repo
 ```

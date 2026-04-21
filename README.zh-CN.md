@@ -68,13 +68,14 @@ pnpm openclaw gateway
 ## 配置是怎么连起来的
 
 - secrets 放在 `config/.env`（gitignored；从 [`config/.env.template`](config/.env.template) 复制）
-- OpenClaw 读取的入口配置是 [`bots/openclaw.json`](bots/openclaw.json)：
+- 源配置入口保留在 [`bots/openclaw.json`](bots/openclaw.json)：
 
 ```json5
 { $include: "../config/openclaw/openclaw.json5" }
 ```
 
-- 真正的模块化配置在 [`config/openclaw/`](config/openclaw/)（JSON5 + `$include`）
+- 真正的模块化源配置在 [`config/openclaw/`](config/openclaw/)（JSON5 + `$include`）
+- wrapper 启动前会把这套源配置渲染成 `bots/.runtime/openclaw.runtime.json5`，这样 OpenClaw 的运行时写回只会落在 `bots/` 下，不会再把 `config/openclaw/` 里的跟踪文件拍平成单文件
 - 配置里可用 `${ENV_VAR}` 引用环境变量（缺失/空值会 fail fast）
 - `OPENCLAW_STATE_DIR=bots` 支持写相对路径：[`scripts/openclaw.mjs`](scripts/openclaw.mjs) 会按 repo 根目录解析
 
@@ -83,8 +84,8 @@ flowchart TD
   A[pnpm openclaw COMMAND] --> B[scripts/openclaw.mjs]
   B --> C[load config/.env]
   B --> D[normalize OPENCLAW_STATE_DIR]
-  D --> E[bots/openclaw.json]
-  E --> F[config/openclaw/openclaw.json5]
+  D --> E[config/openclaw/openclaw.json5]
+  E --> F[bots/.runtime/openclaw.runtime.json5]
 ```
 
 ## 仓库结构
@@ -120,11 +121,11 @@ flowchart TD
 │  ├─ .env.template              # copy to config/.env (gitignored) and fill tokens/keys
 │  ├─ README.md                  # config wiring notes
 │  └─ openclaw/                  # modular JSON5 config (commit-safe; no secrets)
-│     ├─ openclaw.json5          # root JSON5 (uses $include)
+│     ├─ openclaw.json5          # source root JSON5 (uses $include)
 │     └─ agents/                 # agent definitions (defaults + per-agent files)
 ├─ bots/                         # repo-local state dir (gitignored; sensitive)
 │  ├─ README.md                  # migration/bootstrap notes (tracked)
-│  └─ openclaw.json              # state config entrypoint (tracked; $include -> config/openclaw/openclaw.json5)
+│  └─ openclaw.json              # compatibility entrypoint (tracked; source config reference)
 ├─ dockerfiles/                  # sandbox image build contexts used by sandboxed agents
 └─ docs/                         # extra docs for this repo
 ```

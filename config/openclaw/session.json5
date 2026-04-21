@@ -1,0 +1,6 @@
+{
+  "reset": {
+    "mode": "idle",
+    "idleMinutes": 10080
+  }
+}
