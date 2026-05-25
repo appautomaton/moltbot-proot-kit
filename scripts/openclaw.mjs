@@ -7,6 +7,7 @@ import { prepareRuntimeConfig } from './openclaw-config-runtime.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, '..');
+const LEGACY_OPENCLAW_ENV_KEYS = ['CLAWDBOT_STATE_DIR', 'CLAWDBOT_CONFIG_PATH'];
 
 /**
  * Load .env file and inject into process.env (without overriding existing values).
@@ -73,6 +74,14 @@ function normalizeDevFlag(args) {
   return ['--dev', ...args.slice(0, devIndex), ...args.slice(devIndex + 1)];
 }
 
+function createChildEnv() {
+  const childEnv = { ...process.env };
+  for (const key of LEGACY_OPENCLAW_ENV_KEYS) {
+    delete childEnv[key];
+  }
+  return childEnv;
+}
+
 function resolveRepoModularConfigSourcePath() {
   const explicitSource = process.env.OPENCLAW_SOURCE_CONFIG_PATH;
   if (hasNonEmpty(explicitSource)) {
@@ -120,9 +129,6 @@ async function main() {
   if (!hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH) && hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH)) {
     process.env.OPENCLAW_CONFIG_PATH = process.env.CLAWDBOT_CONFIG_PATH;
   }
-  if (!hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH) && hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH)) {
-    process.env.CLAWDBOT_CONFIG_PATH = process.env.OPENCLAW_CONFIG_PATH;
-  }
 
   const sourceConfigPath = resolveRepoModularConfigSourcePath();
   if (sourceConfigPath) {
@@ -133,12 +139,12 @@ async function main() {
     });
     process.env.OPENCLAW_SOURCE_CONFIG_PATH = sourceConfigPath;
     process.env.OPENCLAW_CONFIG_PATH = runtimeConfig.runtimeConfigPath;
-    process.env.CLAWDBOT_CONFIG_PATH = runtimeConfig.runtimeConfigPath;
   }
 
+  const childEnv = createChildEnv();
   const child = spawn('pnpm', ['--dir', 'openclaw', 'openclaw', ...args], {
     stdio: 'inherit',
-    env: process.env,
+    env: childEnv,
   });
 
   child.on('exit', (code, signal) => {
