@@ -86,10 +86,10 @@ scripts/browser-service.sh start
 scripts/browser-service.sh status
 ```
 
-Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `~/.openclaw/browser/clawd/user-data`.
+Defaults: `DISPLAY=:99`, CDP port `18800`, user profile under `bots/browser/openclaw/user-data`.
 
 ## Notes
 
-- **Profile**: This project uses the prod profile at `~/.openclaw/` by default (legacy `~/.clawdbot/` is still supported).
-- **`--dev` flag**: Only use if you need an isolated dev environment (`~/.openclaw-dev/`, port 19001). Must come before the subcommand: `pnpm openclaw --dev gateway`, not `pnpm openclaw gateway --dev`.
+- **Profile**: This project uses repo-local state under `bots/` by default.
+- **`--dev` flag**: Usually avoid it in this repo-local setup. If you intentionally use it, keep it before the subcommand: `pnpm openclaw --dev gateway`, not `pnpm openclaw gateway --dev`.
 - **"node_modules missing" warning**: This is expected at the repo root. Ignore it or run commands with `pnpm --dir openclaw openclaw ...`.

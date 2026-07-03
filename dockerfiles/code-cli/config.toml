@@ -17,4 +17,4 @@ network_access = true
 # Context7 MCP server
 [mcp_servers.context7]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp@latest", "--api-key", "ctx7sk-2a425144-e45f-4e78-aa6e-a55e98daa42a"]
+args = ["-y", "@upstash/context7-mcp@latest"]

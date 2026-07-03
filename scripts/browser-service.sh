@@ -8,10 +8,81 @@ display=":${display_num}"
 screen="${BROWSER_XVFB_SCREEN:-1280x720x24}"
 port="${BROWSER_CDP_PORT:-18800}"
 
-# OpenClaw state lives under ~/.openclaw
-profile="${BROWSER_PROFILE:-clawd}"
-user_data_dir="${BROWSER_USER_DATA_DIR:-$HOME/.openclaw/browser/${profile}/user-data}"
-state_dir="${BROWSER_STATE_DIR:-$HOME/.openclaw/browser/service/${profile}}"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "${script_dir}/.." && pwd)"
+
+env_flag_enabled() {
+  case "${1:-}" in
+    1|true|TRUE|yes|YES|on|ON) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+resolve_repo_path() {
+  local value="$1"
+  if [[ "${value}" == "~" ]]; then
+    echo "${HOME}"
+    return 0
+  fi
+  if [[ "${value}" == "~/"* ]]; then
+    echo "${HOME}/${value#~/}"
+    return 0
+  fi
+  if [[ "${value}" = /* ]]; then
+    echo "${value}"
+    return 0
+  fi
+  echo "${repo_root}/${value}"
+}
+
+load_env_file() {
+  local env_file="${repo_root}/config/.env"
+  [[ -f "${env_file}" ]] || return 0
+  local line key value
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "${line}" || "${line}" == \#* || "${line}" != *=* ]] && continue
+    key="${line%%=*}"
+    value="${line#*=}"
+    key="${key%"${key##*[![:space:]]}"}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    [[ "${key}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+    [[ -n "${!key:-}" ]] && continue
+    if [[ "${value}" == \"*\" && "${value}" == *\" ]]; then
+      value="${value:1:${#value}-2}"
+    elif [[ "${value}" == \'*\' && "${value}" == *\' ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+    [[ -n "${value}" ]] && export "${key}=${value}"
+  done <"${env_file}"
+}
+
+ensure_repo_contained_path() {
+  local name="$1"
+  local value="$2"
+  if env_flag_enabled "${OPENCLAW_MONOREPO_ALLOW_EXTERNAL_PATHS:-}"; then
+    return 0
+  fi
+  case "${value}" in
+    "${repo_root}"|"${repo_root}/"*) return 0 ;;
+  esac
+  echo "error: ${name} resolves outside this monorepo: ${value}" >&2
+  echo "set OPENCLAW_MONOREPO_ALLOW_EXTERNAL_PATHS=1 only if this is intentional" >&2
+  return 1
+}
+
+load_env_file
+
+openclaw_state_dir="$(resolve_repo_path "${OPENCLAW_STATE_DIR:-bots}")"
+profile="${BROWSER_PROFILE:-openclaw}"
+user_data_dir="${BROWSER_USER_DATA_DIR:-${openclaw_state_dir}/browser/${profile}/user-data}"
+state_dir="${BROWSER_STATE_DIR:-${openclaw_state_dir}/browser/service/${profile}}"
+
+ensure_repo_contained_path OPENCLAW_STATE_DIR "${openclaw_state_dir}"
+ensure_repo_contained_path BROWSER_USER_DATA_DIR "${user_data_dir}"
+ensure_repo_contained_path BROWSER_STATE_DIR "${state_dir}"
 
 xvfb_pid_file="${state_dir}/xvfb.pid"
 chrome_pid_file="${state_dir}/chrome.pid"
@@ -37,8 +108,6 @@ find_chrome_bin() {
   echo "${candidates}" | tr ' ' '\n' | sort -V | tail -n 1
 }
 
-chrome_bin="$(find_chrome_bin)"
-
 probe_cdp() {
   local url="http://127.0.0.1:${port}/json/version"
   if command -v curl >/dev/null 2>&1; then
@@ -62,9 +131,12 @@ Environment overrides (optional):
   BROWSER_DISPLAY_NUM    X display number (default: 99)
   BROWSER_XVFB_SCREEN    Xvfb screen, e.g. 1280x720x24
   BROWSER_CDP_PORT       CDP remote debugging port (default: 18800)
-  BROWSER_PROFILE        Profile name used in ~/.openclaw/browser/<profile>/user-data (default: clawd)
-  BROWSER_USER_DATA_DIR  Override user-data-dir (default: ~/.openclaw/browser/<profile>/user-data)
-  BROWSER_STATE_DIR      Where to store pid/log files (default: ~/.openclaw/browser/service/<profile>)
+  OPENCLAW_STATE_DIR     Repo-local state root (default: bots, relative to repo root)
+  OPENCLAW_MONOREPO_ALLOW_EXTERNAL_PATHS
+                          Set to 1 to allow browser state outside this repo
+  BROWSER_PROFILE        Profile name used in <state>/browser/<profile>/user-data (default: openclaw)
+  BROWSER_USER_DATA_DIR  Override user-data-dir (default: <state>/browser/<profile>/user-data)
+  BROWSER_STATE_DIR      Where to store pid/log files (default: <state>/browser/service/<profile>)
 
 Notes:
   - This runs Chromium in "non-headless" mode on Xvfb (DISPLAY=:<num>), with CDP enabled.
@@ -104,6 +176,8 @@ start_chrome() {
     return 0
   fi
 
+  local chrome_bin
+  chrome_bin="$(find_chrome_bin)"
   mkdir -p "$(dirname "${user_data_dir}")"
 
   : >"${chrome_log}"

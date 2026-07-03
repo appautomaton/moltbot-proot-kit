@@ -70,17 +70,14 @@ pnpm openclaw config
 
 For this wrapper repo, the default workflow is repo-local state:
 
-- `OPENCLAW_STATE_DIR=bots` (typically set in `config/.env`)
+- `OPENCLAW_STATE_DIR=bots` (defaulted by the wrapper; can also be set in `config/.env`)
 - Source config root: `config/openclaw/openclaw.json5`
 - Generated runtime config: `bots/.runtime/openclaw.runtime.json5`
 - `bots/openclaw.json` remains the tracked compatibility entrypoint, but the wrapper renders the actual runtime config file before launch.
 
-Upstream OpenClaw profile behavior (context only):
-
-- Default profile (if state dir is not overridden): `~/.openclaw/`
-- `--dev`: `~/.openclaw-dev/`
-- `--profile <name>`: `~/.openclaw-<name>/`
-
 Do not assume home-directory profiles for this repo unless you intentionally override `OPENCLAW_STATE_DIR`.
+OpenClaw's `--dev` and `--profile <name>` flags still inherit the wrapper-provided repo-local state/config paths.
+External OpenClaw path env vars are rejected by default; set
+`OPENCLAW_MONOREPO_ALLOW_EXTERNAL_PATHS=1` only for an intentional escape hatch.
 
 Docs: https://docs.openclaw.ai/cli

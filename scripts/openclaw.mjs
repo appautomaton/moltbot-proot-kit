@@ -8,6 +8,18 @@ import { prepareRuntimeConfig } from './openclaw-config-runtime.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, '..');
 const LEGACY_OPENCLAW_ENV_KEYS = ['CLAWDBOT_STATE_DIR', 'CLAWDBOT_CONFIG_PATH'];
+const ALLOW_EXTERNAL_PATHS_ENV = 'OPENCLAW_MONOREPO_ALLOW_EXTERNAL_PATHS';
+const MONOREPO_PATH_ENV_KEYS = [
+  'OPENCLAW_STATE_DIR',
+  'CLAWDBOT_STATE_DIR',
+  'OPENCLAW_CONFIG_PATH',
+  'CLAWDBOT_CONFIG_PATH',
+  'OPENCLAW_SOURCE_CONFIG_PATH',
+  'OPENCLAW_AGENT_DIR',
+  'OPENCLAW_WORKSPACE_DIR',
+  'OPENCLAW_OAUTH_DIR',
+  'OPENCLAW_BUNDLED_PLUGINS_DIR',
+];
 
 /**
  * Load .env file and inject into process.env (without overriding existing values).
@@ -42,6 +54,16 @@ function hasNonEmpty(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function envFlagEnabled(value) {
+  return ['1', 'true', 'yes', 'on'].includes(String(value ?? '').trim().toLowerCase());
+}
+
+function isPathInsideRepo(input) {
+  const resolved = path.resolve(input);
+  const relative = path.relative(REPO_ROOT, resolved);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
 function resolveUserPathFromRepoRoot(input) {
   const trimmed = typeof input === 'string' ? input.trim() : '';
   if (!trimmed) return input;
@@ -68,6 +90,22 @@ function normalizeRepoRelativePathEnvVars(keys) {
   }
 }
 
+function assertRepoContainedPathEnvVars(keys) {
+  if (envFlagEnabled(process.env[ALLOW_EXTERNAL_PATHS_ENV])) return;
+  for (const key of keys) {
+    const raw = process.env[key];
+    if (!hasNonEmpty(raw)) continue;
+    const resolved = resolveUserPathFromRepoRoot(raw);
+    if (!isPathInsideRepo(resolved)) {
+      throw new Error(
+        `${key} resolves outside this monorepo: ${resolved}. ` +
+          `Set ${ALLOW_EXTERNAL_PATHS_ENV}=1 only if you intentionally want external OpenClaw state/config paths.`,
+      );
+    }
+    process.env[key] = resolved;
+  }
+}
+
 function normalizeDevFlag(args) {
   const devIndex = args.indexOf('--dev');
   if (devIndex <= 0) return args;
@@ -90,9 +128,13 @@ function resolveRepoModularConfigSourcePath() {
 
   const configuredPath = process.env.OPENCLAW_CONFIG_PATH;
   const repoConfigPath = path.join(REPO_ROOT, 'config', 'openclaw', 'openclaw.json5');
+  const compatibilityConfigPath = path.join(REPO_ROOT, 'bots', 'openclaw.json');
   if (hasNonEmpty(configuredPath)) {
     const resolvedConfiguredPath = resolveUserPathFromRepoRoot(configuredPath);
-    if (path.resolve(resolvedConfiguredPath) === path.resolve(repoConfigPath)) {
+    if (
+      path.resolve(resolvedConfiguredPath) === path.resolve(repoConfigPath) ||
+      path.resolve(resolvedConfiguredPath) === path.resolve(compatibilityConfigPath)
+    ) {
       return repoConfigPath;
     }
     return null;
@@ -109,13 +151,14 @@ async function main() {
   loadEnvFile(envFile);
 
   // Normalize repo-relative path env vars (so values like "bots" resolve to <repo>/bots).
-  normalizeRepoRelativePathEnvVars([
-    'OPENCLAW_STATE_DIR',
-    'CLAWDBOT_STATE_DIR',
-    'OPENCLAW_CONFIG_PATH',
-    'CLAWDBOT_CONFIG_PATH',
-    'OPENCLAW_SOURCE_CONFIG_PATH',
-  ]);
+  normalizeRepoRelativePathEnvVars(MONOREPO_PATH_ENV_KEYS);
+
+  if (!hasNonEmpty(process.env.OPENCLAW_STATE_DIR) && hasNonEmpty(process.env.CLAWDBOT_STATE_DIR)) {
+    process.env.OPENCLAW_STATE_DIR = process.env.CLAWDBOT_STATE_DIR;
+  }
+  if (!hasNonEmpty(process.env.OPENCLAW_STATE_DIR)) {
+    process.env.OPENCLAW_STATE_DIR = resolveUserPathFromRepoRoot('bots');
+  }
 
   // Compatibility aliases:
   // - OpenClaw expects OPENCLAW_GATEWAY_TOKEN (and friends).
@@ -129,6 +172,8 @@ async function main() {
   if (!hasNonEmpty(process.env.OPENCLAW_CONFIG_PATH) && hasNonEmpty(process.env.CLAWDBOT_CONFIG_PATH)) {
     process.env.OPENCLAW_CONFIG_PATH = process.env.CLAWDBOT_CONFIG_PATH;
   }
+
+  assertRepoContainedPathEnvVars(MONOREPO_PATH_ENV_KEYS);
 
   const sourceConfigPath = resolveRepoModularConfigSourcePath();
   if (sourceConfigPath) {

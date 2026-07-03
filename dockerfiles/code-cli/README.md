@@ -14,6 +14,8 @@
 - `auth.json`：Codex CLI OAuth 缓存（会原样复制到 `/root/.codex/auth.json`）
 - `.dockerignore`：默认忽略所有文件，只放行 build 必需文件（避免把杂物带进 build context）
 
+不要在 `config.toml` 里提交 MCP/API key。需要认证的 MCP 服务应通过运行时环境或本机未跟踪配置注入。
+
 ## Build（推荐使用该目录作为 build context）
 
 ```sh
