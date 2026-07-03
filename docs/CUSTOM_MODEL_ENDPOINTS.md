@@ -31,9 +31,9 @@ for the agent to call:                 for other clients to call:
 At runtime, OpenClaw loads config via `loadConfig()`:
 
 - Config file location is controlled by `OPENCLAW_CONFIG_PATH` (preferred) or `CLAWDBOT_CONFIG_PATH` (legacy).
-  If unset, it defaults to:
-  - state dir: `~/.openclaw`
-  - config path: `~/.openclaw/openclaw.json`
+  In this wrapper repo, `scripts/openclaw.mjs` defaults state to `bots/` and renders
+  `config/openclaw/openclaw.json5` to `bots/.runtime/openclaw.runtime.json5` before launch.
+  Upstream OpenClaw's unwrapped default is home-directory state.
 
 - Reads `openclaw.json` (or legacy `clawdbot.json`) as **JSON5**
 - Resolves `$include` directives
@@ -73,23 +73,23 @@ So after you add `agents.list[]`, you may not see `agent:<id>:main` in Sessions 
 Create/initialize the session (either one):
 
 ```bash
-pnpm openclaw --dev agent --agent kimi --message "hi"
+pnpm openclaw agent --agent kimi --message "hi"
 ```
 
 Reuse the same session (stable key, no new session key):
 
 ```bash
-pnpm openclaw --dev agent --agent kimi --session-key agent:kimi:main --message "..."
+pnpm openclaw agent --agent kimi --session-key agent:kimi:main --message "..."
 ```
 
 List sessions from the CLI:
 
 ```bash
 # Default agent (resolved from config; usually agent:main)
-pnpm openclaw --dev sessions
+pnpm openclaw sessions
 
 # A specific agent’s store (example: kimi)
-pnpm openclaw --dev sessions --store ~/.openclaw/agents/kimi/sessions/sessions.json
+pnpm openclaw sessions --store bots/agents/kimi/sessions/sessions.json
 ```
 
 ---

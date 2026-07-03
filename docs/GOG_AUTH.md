@@ -15,7 +15,7 @@ OS Keyring（桌面环境）
   gog -> DBus/Keychain -> token
 
 加密文件 keyring（无桌面/daemon/CI 最稳）
-  gog -> ~/.openclaw/gogcli/keyring/* (encrypted)  -> token
+  gog -> bots/gogcli/keyring/* (encrypted)  -> token
             ^ 需要 GOG_KEYRING_PASSWORD 解锁
 ```
 
@@ -26,19 +26,19 @@ OS Keyring（桌面环境）
 
 ## 推荐目录（dev）
 
-本仓库默认把 dev 配置集中在 `~/.openclaw`：
+本仓库默认把 dev 配置集中在 repo-local `bots/`：
 
 - OAuth client secret（你从 Google Cloud Console 下载的 JSON）：
-  - `~/.openclaw/.secrets/gog/client_secret.json`
+  - `bots/.secrets/gog/client_secret.json`
 - keyring passphrase（你自己设置的一段口令；不要提交到 git）：
-  - `~/.openclaw/.secrets/gog/keyring.pass`
+  - `bots/.secrets/gog/keyring.pass`
 - gogcli 配置与 token（自动生成）：
-  - `~/.openclaw/gogcli/credentials.json`
-  - `~/.openclaw/gogcli/keyring/*`
+  - `bots/gogcli/credentials.json`
+  - `bots/gogcli/keyring/*`
 
 建议权限：
-- `chmod 700 ~/.openclaw/.secrets`
-- `chmod 600 ~/.openclaw/.secrets/gog/keyring.pass`
+- `chmod 700 bots/.secrets`
+- `chmod 600 bots/.secrets/gog/keyring.pass`
 
 ---
 
@@ -49,8 +49,8 @@ OS Keyring（桌面环境）
 以后你在终端里执行任何 `gog ...`，都建议先确保它写进 **同一套 dev 配置目录**：
 
 ```bash
-export XDG_CONFIG_HOME="$HOME/.openclaw"
-export GOG_KEYRING_PASSWORD="$(cat "$HOME/.openclaw/.secrets/gog/keyring.pass")"
+export XDG_CONFIG_HOME="$PWD/bots"
+export GOG_KEYRING_PASSWORD="$(cat "$PWD/bots/.secrets/gog/keyring.pass")"
 ```
 
 > 注意：如果你不设 `XDG_CONFIG_HOME`，`gog` 默认会写到 `~/.config/gogcli`，导致“我明明授权了，但 Gateway 找不到/用不了”。
@@ -58,7 +58,7 @@ export GOG_KEYRING_PASSWORD="$(cat "$HOME/.openclaw/.secrets/gog/keyring.pass")"
 ### 1) 存 OAuth 客户端凭据
 
 ```bash
-gog auth credentials set "$HOME/.openclaw/.secrets/gog/client_secret.json"
+gog auth credentials set "$PWD/bots/.secrets/gog/client_secret.json"
 gog auth credentials list --plain
 ```
 
@@ -101,12 +101,12 @@ gog auth list --plain --no-input
 ### 目标
 
 让你照旧运行：
-- `pnpm openclaw --dev gateway`
+- `pnpm openclaw gateway`
 
-但 Gateway 进程启动时会自动带上：
-- `XDG_CONFIG_HOME=~/.openclaw`（如果你没手动设）
-- `GOG_KEYRING_PASSWORD=$(cat ~/.openclaw/.secrets/gog/keyring.pass)`（如果你没手动设）
-- 把 `~/.local/bin` 加进 `PATH`（确保能找到 `gog`）
+把这些环境变量写进 `config/.env`，Gateway 进程就会从 wrapper 继承：
+- `XDG_CONFIG_HOME=/absolute/path/to/this/repo/bots`
+- `GOG_KEYRING_PASSWORD=...`
+- `PATH` 中包含能找到 `gog` 的目录
 
 ### 实现位置
 
@@ -116,10 +116,10 @@ gog auth list --plain --no-input
 ### 行为说明（简化版）
 
 ```
-pnpm openclaw --dev gateway
+pnpm openclaw gateway
   -> node scripts/openclaw.mjs
-     -> (dev 模式) 注入 XDG_CONFIG_HOME / GOG_KEYRING_PASSWORD / PATH
-     -> spawn: pnpm --dir openclaw openclaw --dev gateway ...
+     -> loads config/.env
+     -> spawn: pnpm --dir openclaw openclaw gateway ...
         -> Gateway exec tools (gog --no-input ...) 继承到 env
 ```
 

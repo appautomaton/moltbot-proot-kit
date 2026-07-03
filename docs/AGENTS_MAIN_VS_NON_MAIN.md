@@ -6,7 +6,7 @@
 
 | Aspect              | Main agent                        | Non-main agent (e.g. `kimi`)       |
 |---------------------|-----------------------------------|------------------------------------|
-| Session store       | `~/.openclaw/agents/main/...`     | `~/.openclaw/agents/<id>/...`      |
+| Session store       | `bots/agents/main/...`            | `bots/agents/<id>/...`             |
 | Skills refresh      | Gateway auto-refreshes            | CLI reuses cached snapshot         |
 | Sandbox (`non-main`)| Runs direct                       | May be sandboxed                   |
 
@@ -16,8 +16,8 @@
 |------------------|-----------------------------------------------------------------------------|
 | Agent ID         | Configured agent name (e.g. `main`, `kimi`) from `config/openclaw.json`      |
 | Session key      | Stable identifier like `agent:kimi:main` for state lookup                   |
-| State dir        | `~/.openclaw/` (override via `OPENCLAW_STATE_DIR`, legacy `~/.clawdbot/` supported) |
-| Workspace        | Working directory for files/repo ops (e.g. `~/clawd-dev`)                   |
+| State dir        | `bots/` in this repo (override via `OPENCLAW_STATE_DIR` only intentionally) |
+| Workspace        | Working directory for files/repo ops (usually `bots/workspaces/<agent>`)    |
 | Skills snapshot  | Cached skill list stored in session entry (`skillsSnapshot`)                |
 
 ## Why Non-Main Agents Lag on Skills
@@ -56,7 +56,7 @@ Adding an agent to `config/openclaw.json` is not enough - you must also register
 pnpm openclaw agents add kimi
 ```
 
-This creates the agent's state directory (`~/.openclaw/agents/kimi/`) so the gateway/frontend recognizes it.
+This creates the agent's state directory (`bots/agents/kimi/`) so the gateway/frontend recognizes it.
 
 ## Commands
 
@@ -65,7 +65,7 @@ This creates the agent's state directory (`~/.openclaw/agents/kimi/`) so the gat
 | Register new agent      | `pnpm openclaw agents add <id>`                                               |
 | List configured agents  | `pnpm openclaw agents list`                                                   |
 | List main sessions      | `pnpm openclaw sessions`                                                      |
-| List kimi sessions      | `pnpm openclaw sessions --store ~/.openclaw/agents/kimi/sessions/sessions.json` |
+| List kimi sessions      | `pnpm openclaw sessions --store bots/agents/kimi/sessions/sessions.json` |
 
 ## Refreshing Skills / Starting a New Session
 

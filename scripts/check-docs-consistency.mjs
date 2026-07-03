@@ -76,6 +76,14 @@ addCheck(
   'proot docs describe repo-local browser profile',
   includes('docs/proot-setup.md', 'bots/browser/openclaw/user-data'),
 );
+addCheck(
+  'active repo docs avoid home OpenClaw state examples',
+  doesNotInclude('docs/GOG_AUTH.md', '~/.openclaw') &&
+    doesNotInclude('docs/MEMORY_INDEXING.md', '~/.openclaw') &&
+    doesNotInclude('docs/MEMORY_INDEXING.md', '~/.clawdbot') &&
+    doesNotInclude('docs/CUSTOM_MODEL_ENDPOINTS.md', '~/.openclaw') &&
+    doesNotInclude('docs/AGENTS_MAIN_VS_NON_MAIN.md', '~/.openclaw'),
+);
 
 const failed = checks.filter((check) => !check.passed);
 if (failed.length > 0) {

@@ -37,7 +37,7 @@ Separately, OpenClaw always stores **session transcripts**:
 
 These transcripts are **not indexed into SQLite** unless you explicitly enable session indexing.
 
-`<STATE_DIR>` is the OpenClaw “state directory” (default `~/.openclaw`, with legacy `~/.clawdbot` fallback if it already exists; override with `OPENCLAW_STATE_DIR` / legacy `CLAWDBOT_STATE_DIR`).
+`<STATE_DIR>` is the OpenClaw state directory. In this wrapper repo it defaults to `bots/`; use `OPENCLAW_STATE_DIR` only for an intentional override.
 See: `openclaw/src/config/paths.ts` (`resolveStateDir`)
 
 ---
@@ -46,9 +46,7 @@ See: `openclaw/src/config/paths.ts` (`resolveStateDir`)
 
 They live in the agent **workspace directory** (the “working folder” the agent can read/write).
 
-- Dev profile gateway (`pnpm openclaw --dev gateway`) bootstraps a dev workspace with files like `AGENTS.md`, `SOUL.md`, etc.
-  It does **not** create `MEMORY.md` for you.
-  - See: `openclaw/src/cli/gateway-cli/dev.ts` (`ensureDevWorkspace()`)
+- This repo's wrapper points workspaces at repo-local `bots/workspaces/<agent>` paths.
 - You (or the agent) typically create `MEMORY.md` and `memory/YYYY-MM-DD.md` manually as durable notes.
 - There is also an automatic “pre-compaction memory flush” feature that can prompt the agent to write
   durable notes to disk near compaction, but it does **not** run on every message.
@@ -86,7 +84,7 @@ Even if transcripts exist, they won’t be indexed unless both:
 
 ## How to enable sessions as a memory source (SQLite)
 
-Edit your profile config (usually `~/.openclaw/openclaw.json`; see `pnpm openclaw models status` for the active path) to include:
+Edit the repo source config under `config/openclaw/` (the wrapper renders it to `bots/.runtime/openclaw.runtime.json5`) to include:
 
 ```json
 {
@@ -217,15 +215,14 @@ In the long-running gateway/daemon process, the manager instance stays alive and
 ## State paths (quick reference)
 
 ```
-state dir:   ~/.openclaw (default) OR ~/.clawdbot (legacy)
-config:      <STATE_DIR>/openclaw.json
+state dir:   bots
+config:      bots/.runtime/openclaw.runtime.json5
 sqlite index <STATE_DIR>/memory/<agentId>.sqlite
 sessions:    <STATE_DIR>/agents/<agentId>/sessions/*.jsonl
-workspace:   ~/clawd-dev (or whatever config sets as agents.defaults.workspace)
+workspace:   bots/workspaces/<agent> (or whatever config sets as agents.defaults.workspace)
 ```
 
-OpenClaw uses `~/.openclaw` by default. If it does not exist but a legacy `~/.clawdbot` directory does, it will use the legacy path instead.
-It can also be overridden via `OPENCLAW_STATE_DIR` (or legacy `CLAWDBOT_STATE_DIR`).
+The unwrapped upstream default is home-directory state. This repo's wrapper sets `OPENCLAW_STATE_DIR=bots` before launching OpenClaw.
 See: `openclaw/src/config/paths.ts` (`resolveStateDir`)
 
 The exact index path is always printed in:
